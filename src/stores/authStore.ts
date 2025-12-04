@@ -15,6 +15,7 @@ interface AuthState {
   isLoading: boolean;
   login: (email: string, password: string) => Promise<void>;
   logout: () => void;
+  checkAuth: () => Promise<void>;
 }
 
 export const useAuthStore = create<AuthState>((set) => ({
@@ -30,6 +31,7 @@ export const useAuthStore = create<AuthState>((set) => ({
 
       localStorage.setItem('accessToken', tokens.accessToken);
       localStorage.setItem('refreshToken', tokens.refreshToken);
+      localStorage.setItem('user', JSON.stringify(user));
 
       set({ user, isAuthenticated: true, isLoading: false });
     } catch (error) {
@@ -41,6 +43,18 @@ export const useAuthStore = create<AuthState>((set) => ({
   logout: () => {
     localStorage.removeItem('accessToken');
     localStorage.removeItem('refreshToken');
+    localStorage.removeItem('user');
     set({ user: null, isAuthenticated: false });
+  },
+
+  checkAuth: async () => {
+    const token = localStorage.getItem('accessToken');
+    const storedUser = localStorage.getItem('user');
+    
+    if (token && storedUser) {
+      set({ user: JSON.parse(storedUser), isAuthenticated: true });
+    } else {
+      set({ user: null, isAuthenticated: false });
+    }
   },
 }));
