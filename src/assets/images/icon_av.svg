@@ -1,0 +1,92 @@
+<svg viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="glow1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#6366f1" stop-opacity="0.8" />
+      <stop offset="100%" stop-color="#a855f7" stop-opacity="0.5" />
+    </linearGradient>
+    <linearGradient id="glow2" x1="100%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#a855f7" stop-opacity="0.8" />
+      <stop offset="100%" stop-color="#6366f1" stop-opacity="0.5" />
+    </linearGradient>
+    
+    <!-- Filtre glow -->
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Background cercle -->
+  <circle cx="200" cy="200" r="180" fill="url(#glow1)" opacity="0.1" />
+
+  <!-- Hexagones plus visibles -->
+  <g opacity="0.4" stroke="url(#glow1)" stroke-width="2" fill="none" filter="url(#glow)">
+    <polygon points="200,50 250,87.5 250,162.5 200,200 150,162.5 150,87.5" />
+    <polygon points="200,200 250,237.5 250,312.5 200,350 150,312.5 150,237.5" />
+    <polygon points="100,125 150,162.5 150,237.5 100,275 50,237.5 50,162.5" />
+    <polygon points="300,125 350,162.5 350,237.5 300,275 250,237.5 250,162.5" />
+  </g>
+
+  <!-- Cercles concentriques plus épais -->
+  <g opacity="0.5" stroke="url(#glow2)" stroke-width="3" fill="none" filter="url(#glow)">
+    <circle cx="200" cy="200" r="80">
+      <animate attributeName="r" values="80;85;80" dur="3s" repeatCount="indefinite" />
+      <animate attributeName="opacity" values="0.5;0.8;0.5" dur="3s" repeatCount="indefinite" />
+    </circle>
+    <circle cx="200" cy="200" r="120">
+      <animate attributeName="r" values="120;125;120" dur="4s" begin="0.5s" repeatCount="indefinite" />
+      <animate attributeName="opacity" values="0.5;0.8;0.5" dur="4s" begin="0.5s" repeatCount="indefinite" />
+    </circle>
+    <circle cx="200" cy="200" r="160">
+      <animate attributeName="r" values="160;165;160" dur="5s" begin="1s" repeatCount="indefinite" />
+      <animate attributeName="opacity" values="0.5;0.8;0.5" dur="5s" begin="1s" repeatCount="indefinite" />
+    </circle>
+  </g>
+
+  <!-- Balance de justice GRANDE et visible -->
+  <g transform="translate(200, 200)" filter="url(#glow)">
+    <!-- Pilier central plus large -->
+    <rect x="-6" y="-80" width="12" height="160" fill="url(#glow1)" rx="3" opacity="0.9" />
+    
+    <!-- Barre horizontale plus épaisse -->
+    <rect x="-80" y="-85" width="160" height="8" fill="url(#glow2)" rx="4" opacity="0.9" />
+    
+    <!-- Plateau gauche plus grand -->
+    <line x1="-70" y1="-81" x2="-70" y2="-50" stroke="url(#glow1)" stroke-width="3" />
+    <ellipse cx="-70" cy="-47" rx="28" ry="6" fill="url(#glow1)" opacity="0.8">
+      <animate attributeName="opacity" values="0.8;1;0.8" dur="2s" repeatCount="indefinite" />
+    </ellipse>
+    
+    <!-- Plateau droit plus grand -->
+    <line x1="70" y1="-81" x2="70" y2="-50" stroke="url(#glow2)" stroke-width="3" />
+    <ellipse cx="70" cy="-47" rx="28" ry="6" fill="url(#glow2)" opacity="0.8">
+      <animate attributeName="opacity" values="0.8;1;0.8" dur="2s" repeatCount="indefinite" />
+    </ellipse>
+    
+    <!-- Base plus large -->
+    <ellipse cx="0" cy="80" rx="50" ry="8" fill="url(#glow1)" opacity="0.7" />
+  </g>
+
+  <!-- Particules plus grosses et visibles -->
+  <g opacity="0.6">
+    <circle cx="80" cy="100" r="4" fill="#6366f1">
+      <animate attributeName="cy" values="100;90;100" dur="3s" repeatCount="indefinite" />
+      <animate attributeName="opacity" values="0.6;1;0.6" dur="3s" repeatCount="indefinite" />
+    </circle>
+    <circle cx="320" cy="120" r="5" fill="#a855f7">
+      <animate attributeName="cy" values="120;110;120" dur="4s" begin="1s" repeatCount="indefinite" />
+      <animate attributeName="opacity" values="0.6;1;0.6" dur="4s" begin="1s" repeatCount="indefinite" />
+    </circle>
+    <circle cx="100" cy="300" r="4.5" fill="#6366f1">
+      <animate attributeName="cy" values="300;290;300" dur="3.5s" begin="0.5s" repeatCount="indefinite" />
+      <animate attributeName="opacity" values="0.6;1;0.6" dur="3.5s" begin="0.5s" repeatCount="indefinite" />
+    </circle>
+    <circle cx="300" cy="280" r="4" fill="#a855f7">
+      <animate attributeName="cy" values="280;270;280" dur="4.5s" begin="1.5s" repeatCount="indefinite" />
+      <animate attributeName="opacity" values="0.6;1;0.6" dur="4.5s" begin="1.5s" repeatCount="indefinite" />
+    </circle>
+  </g>
+</svg>

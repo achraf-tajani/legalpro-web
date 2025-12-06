@@ -1,60 +1,78 @@
 import { create } from 'zustand';
-import api from '../services/api';
-
-interface User {
-  id: string;
-  email: string;
-  nom: string;
-  prenom: string;
-  role: string;
-}
+import { authService } from '../services/auth.service';
+import type { User } from '../types/auth.types';
 
 interface AuthState {
+  // State
   user: User | null;
   isAuthenticated: boolean;
   isLoading: boolean;
+  error: string | null;
+
+  // Actions
   login: (email: string, password: string) => Promise<void>;
-  logout: () => void;
-  checkAuth: () => Promise<void>;
+  logout: () => Promise<void>;
+  checkAuth: () => void;
+  clearError: () => void;
 }
 
 export const useAuthStore = create<AuthState>((set) => ({
-  user: null,
-  isAuthenticated: !!localStorage.getItem('accessToken'),
+  // État initial
+  user: authService.getStoredUser(),
+  isAuthenticated: authService.isAuthenticated(),
   isLoading: false,
+  error: null,
 
+  // Login
   login: async (email: string, password: string) => {
-    set({ isLoading: true });
+    set({ isLoading: true, error: null });
+    
     try {
-      const response = await api.post('/auth/login', { email, password });
-      const { user, tokens } = response.data;
-
-      localStorage.setItem('accessToken', tokens.accessToken);
-      localStorage.setItem('refreshToken', tokens.refreshToken);
-      localStorage.setItem('user', JSON.stringify(user));
-
-      set({ user, isAuthenticated: true, isLoading: false });
-    } catch (error) {
-      set({ isLoading: false });
+      const { user } = await authService.login(email, password);
+      set({ 
+        user, 
+        isAuthenticated: true, 
+        isLoading: false,
+        error: null 
+      });
+    } catch (error: any) {
+      const errorMessage = error.response?.data?.message || 'Email ou mot de passe incorrect';
+      set({ 
+        isLoading: false, 
+        error: errorMessage,
+        isAuthenticated: false,
+        user: null
+      });
       throw error;
     }
   },
 
-  logout: () => {
-    localStorage.removeItem('accessToken');
-    localStorage.removeItem('refreshToken');
-    localStorage.removeItem('user');
-    set({ user: null, isAuthenticated: false });
+  // Logout
+  logout: async () => {
+    set({ isLoading: true });
+    
+    try {
+      await authService.logout();
+    } finally {
+      set({ 
+        user: null, 
+        isAuthenticated: false, 
+        isLoading: false,
+        error: null
+      });
+    }
   },
 
-  checkAuth: async () => {
-    const token = localStorage.getItem('accessToken');
-    const storedUser = localStorage.getItem('user');
+  // Vérifier l'auth au démarrage
+  checkAuth: () => {
+    const user = authService.getStoredUser();
+    const isAuthenticated = authService.isAuthenticated();
     
-    if (token && storedUser) {
-      set({ user: JSON.parse(storedUser), isAuthenticated: true });
-    } else {
-      set({ user: null, isAuthenticated: false });
-    }
+    set({ user, isAuthenticated });
+  },
+
+  // Clear error
+  clearError: () => {
+    set({ error: null });
   },
 }));
