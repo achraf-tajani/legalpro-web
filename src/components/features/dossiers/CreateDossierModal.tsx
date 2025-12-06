@@ -11,7 +11,8 @@ interface CreateDossierModalProps {
 }
 
 export default function CreateDossierModal({ isOpen, onClose, onSubmit, clients }: CreateDossierModalProps) {
-  const { t } = useTranslation();
+const { t, i18n } = useTranslation();
+const isRTL = i18n.language === 'ar';
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState<CreateDossierDto>({
     titre: '',
@@ -58,8 +59,10 @@ export default function CreateDossierModal({ isOpen, onClose, onSubmit, clients 
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
-      <div className="bg-slate-900 rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-hidden border border-slate-800">
-        {/* Header */}
+    <div 
+      className="bg-slate-900 rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-hidden border border-slate-800"
+      dir={isRTL ? 'rtl' : 'ltr'}
+    >        {/* Header */}
         <div className="bg-gradient-to-r from-indigo-500 to-purple-600 p-6 flex items-center justify-between">
           <h2 className="text-2xl font-bold text-white">{t('dossiers.new')}</h2>
           <button
@@ -76,7 +79,7 @@ export default function CreateDossierModal({ isOpen, onClose, onSubmit, clients 
             {/* Titre */}
             <div className="md:col-span-2">
               <label className="block text-sm font-medium text-slate-300 mb-2">
-                Titre *
+                {t('dossiers.modal.title')} *
               </label>
               <input
                 type="text"
@@ -84,14 +87,14 @@ export default function CreateDossierModal({ isOpen, onClose, onSubmit, clients 
                 value={formData.titre}
                 onChange={(e) => setFormData({ ...formData, titre: e.target.value })}
                 className="w-full px-4 py-3 bg-slate-800/50 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
-                placeholder="Ex: Affaire Martin vs Dupont"
+                placeholder={t('dossiers.modal.titlePlaceholder')}
               />
             </div>
 
             {/* Type */}
             <div>
               <label className="block text-sm font-medium text-slate-300 mb-2">
-                Type *
+                {t('dossiers.modal.type')} *
               </label>
               <select
                 required
@@ -99,25 +102,25 @@ export default function CreateDossierModal({ isOpen, onClose, onSubmit, clients 
                 onChange={(e) => setFormData({ ...formData, type: e.target.value })}
                 className="w-full px-4 py-3 bg-slate-800/50 border border-slate-700 rounded-xl text-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
               >
-                <option value="">Sélectionner...</option>
-                <option value="Civil">Civil</option>
-                <option value="Pénal">Pénal</option>
-                <option value="Commercial">Commercial</option>
-                <option value="Administratif">Administratif</option>
+                <option value="">{t('dossiers.modal.selectType')}</option>
+                <option value="Civil">{t('dossiers.modal.typeCivil')}</option>
+                <option value="Pénal">{t('dossiers.modal.typePenal')}</option>
+                <option value="Commercial">{t('dossiers.modal.typeCommercial')}</option>
+                <option value="Administratif">{t('dossiers.modal.typeAdministratif')}</option>
               </select>
             </div>
 
             {/* Client */}
             <div>
               <label className="block text-sm font-medium text-slate-300 mb-2">
-                Client
+                {t('dossiers.modal.client')}
               </label>
               <select
                 value={formData.id_client}
                 onChange={(e) => setFormData({ ...formData, id_client: e.target.value })}
                 className="w-full px-4 py-3 bg-slate-800/50 border border-slate-700 rounded-xl text-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
               >
-                <option value="">Aucun client</option>
+                <option value="">{t('dossiers.modal.noClient')}</option>
                 {clients.map((client) => (
                   <option key={client.id} value={client.id}>
                     {client.nom} {client.prenom || ''}
@@ -129,49 +132,49 @@ export default function CreateDossierModal({ isOpen, onClose, onSubmit, clients 
             {/* Statut */}
             <div>
               <label className="block text-sm font-medium text-slate-300 mb-2">
-                Statut
+                {t('dossiers.modal.statut')}
               </label>
               <select
                 value={formData.statut}
                 onChange={(e) => setFormData({ ...formData, statut: e.target.value as any })}
                 className="w-full px-4 py-3 bg-slate-800/50 border border-slate-700 rounded-xl text-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
               >
-                <option value="ouvert">Ouvert</option>
-                <option value="en_cours">En cours</option>
-                <option value="suspendu">Suspendu</option>
-                <option value="clos">Clos</option>
-                <option value="archive">Archivé</option>
+                <option value="ouvert">{t('dossiers.modal.statutOuvert')}</option>
+                <option value="en_cours">{t('dossiers.modal.statutEnCours')}</option>
+                <option value="suspendu">{t('dossiers.modal.statutSuspendu')}</option>
+                <option value="clos"> {t('dossiers.modal.statutClos')}</option>
+                <option value="archive">{t('dossiers.modal.statutArchive')}</option>
               </select>
             </div>
 
             {/* Priorité */}
             <div>
               <label className="block text-sm font-medium text-slate-300 mb-2">
-                Priorité
+                {t('dossiers.modal.priorite')}
               </label>
               <select
                 value={formData.priorite}
                 onChange={(e) => setFormData({ ...formData, priorite: e.target.value as any })}
                 className="w-full px-4 py-3 bg-slate-800/50 border border-slate-700 rounded-xl text-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
               >
-                <option value="basse">Basse</option>
-                <option value="normale">Normale</option>
-                <option value="haute">Haute</option>
-                <option value="critique">Critique</option>
+                <option value="basse">{t('dossiers.modal.prioriteBasse')}</option>
+                <option value="normale">{t('dossiers.modal.prioriteNormale')}</option>
+                <option value="haute">{t('dossiers.modal.prioriteHaute')}</option>
+                <option value="critique"> {t('dossiers.modal.prioriteCritique')}</option>
               </select>
             </div>
 
             {/* Description */}
             <div className="md:col-span-2">
               <label className="block text-sm font-medium text-slate-300 mb-2">
-                Description
+                {t('dossiers.modal.description')}
               </label>
               <textarea
                 rows={4}
                 value={formData.description}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                 className="w-full px-4 py-3 bg-slate-800/50 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
-                placeholder="Détails du dossier..."
+                placeholder={t('dossiers.modal.descriptionPlaceholder')}
               />
             </div>
           </div>

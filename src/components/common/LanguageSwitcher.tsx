@@ -57,7 +57,7 @@ export default function LanguageSwitcher({ variant = 'default' }: LanguageSwitch
                   currentLanguage.code === lang.code ? 'bg-slate-800/50' : ''
                 }`}
               >
-                <span className="text-xl">{lang.flag}</span>
+                <span className="text-xl text-white/60">{lang.flag}</span>
                 <span className="text-sm font-medium text-white">{lang.name}</span>
                 {currentLanguage.code === lang.code && (
                   <svg className="w-4 h-4 ml-auto text-indigo-400" fill="currentColor" viewBox="0 0 20 20">
@@ -96,7 +96,7 @@ export default function LanguageSwitcher({ variant = 'default' }: LanguageSwitch
                 currentLanguage.code === lang.code ? 'bg-indigo-500/10 border-l-2 border-indigo-500' : ''
               }`}
             >
-              <span className="text-2xl">{lang.flag}</span>
+              <span className="text-2xl text-white/60">{lang.flag}</span>
               <div className="flex-1 text-left">
                 <p className="text-sm font-medium text-white">{lang.name}</p>
                 <p className="text-xs text-slate-400">{lang.code.toUpperCase()}</p>

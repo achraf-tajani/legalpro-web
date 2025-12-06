@@ -7,6 +7,7 @@ import { useClients } from '../../hooks/useClients';
 import { dossierService } from '../../services/dossier.service';
 import CreateDossierModal from '../../components/features/dossiers/CreateDossierModal';
 import type { CreateDossierDto } from '../../types/dossier.types';
+import { useNavigate } from 'react-router-dom';
 
 
 export default function DossiersList() {
@@ -15,6 +16,7 @@ export default function DossiersList() {
   const { clients } = useClients();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const navigate = useNavigate();
 
   const handleCreateDossier = async (data: CreateDossierDto) => {
   await dossierService.create(data);
@@ -96,6 +98,7 @@ export default function DossiersList() {
             {dossiers.map((dossier) => (
               <div
                 key={dossier.id}
+                onClick={() => navigate(`/dossiers/${dossier.id}`)}
                 className="flex items-center space-x-4 p-4 bg-slate-900/30 hover:bg-slate-800/50 rounded-xl transition-all cursor-pointer border border-transparent hover:border-indigo-500/30"
               >
                 {/* Icon */}

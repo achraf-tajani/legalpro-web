@@ -9,6 +9,7 @@ import { useTranslation } from 'react-i18next';
 const Login = lazy(() => import('./pages/auth/Login'));
 const Dashboard = lazy(() => import('./pages/dashboard/Dashboard'));
 const DossiersList = lazy(() => import('./pages/dossiers/DossiersList'));
+const DossierDetail = lazy(() => import('./pages/dossiers/DossierDetail'));
 const ClientsList = lazy(() => import('./pages/clients/ClientsList'));
 const TachesList = lazy(() => import('./pages/taches/TachesList'));
 const FacturesList = lazy(() => import('./pages/factures/FacturesList'));
@@ -51,6 +52,7 @@ function App() {
           >
             <Route index element={<Dashboard />} />
             <Route path="dossiers" element={<DossiersList />} />
+            <Route path="dossiers/:id" element={<DossierDetail />} />
             <Route path="clients" element={<ClientsList />} />
             <Route path="taches" element={<TachesList />} />
             <Route path="factures" element={<FacturesList />} />
