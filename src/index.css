@@ -1,1 +1,8 @@
-@import "tailwindcss"
+@import "tailwindcss";
+
+@layer utilities {
+  select option {
+    background-color: #1e293b;
+    color: white;
+  }
+}

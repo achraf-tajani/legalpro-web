@@ -3,8 +3,11 @@ import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../../stores/authStore';
 import { ROUTES } from '../../config/routes.config';
 import logoAvocat from '../../assets/images/icon_av.svg';
+import { useTranslation } from 'react-i18next';
+import LanguageSwitcher from '../../components/common/LanguageSwitcher';
 
 export default function Login() {
+  const { t } = useTranslation();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   
@@ -34,6 +37,9 @@ export default function Login() {
 
   return (
     <div className="min-h-screen flex bg-slate-950 relative overflow-hidden">
+      <div className="absolute top-6 right-6 z-50">
+        <LanguageSwitcher />
+      </div>
       {/* Background Pattern */}
       <div className="absolute inset-0">
         <div className="absolute inset-0 bg-gradient-to-br from-indigo-950/20 via-slate-950 to-purple-950/20"></div>
@@ -63,12 +69,12 @@ export default function Login() {
 
           {/* Titre */}
           <div className="text-center space-y-4">
-            <h1 className="text-6xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-white via-indigo-200 to-purple-200">
-              LegalPro
-            </h1>
-            <p className="text-xl text-slate-400 leading-relaxed">
-              La solution de gestion juridique nouvelle génération
-            </p>
+          <h1 className="text-6xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-white via-indigo-200 to-purple-200">
+            {t('auth.title')}
+          </h1>
+          <p className="text-xl text-slate-400 leading-relaxed">
+            {t('auth.subtitle')}
+          </p>
           </div>
 
           {/* Features */}
@@ -104,7 +110,7 @@ export default function Login() {
                 className="w-16 h-16 object-contain"
               />
             </div>
-            <h1 className="text-3xl font-bold text-white">LegalPro</h1>
+            <h1 className="text-3xl font-bold text-white">{t('auth.title')}</h1>
           </div>
 
           {/* Card de connexion */}
@@ -115,8 +121,8 @@ export default function Login() {
             {/* Card */}
             <div className="relative bg-slate-900/90 backdrop-blur-2xl rounded-2xl p-8 border border-slate-700/50 shadow-2xl">
               <div className="mb-8">
-                <h2 className="text-2xl font-bold text-white mb-2">Connexion</h2>
-                <p className="text-slate-400 text-sm">Accédez à votre espace de travail</p>
+                <h2 className="text-2xl font-bold text-white mb-2">{t('auth.login')}</h2>
+                <p className="text-slate-400 text-sm">{t('auth.subtitle')}</p>
               </div>
 
               {/* Error */}
@@ -135,7 +141,7 @@ export default function Login() {
                 {/* Email */}
                 <div className="space-y-2">
                   <label className="block text-sm font-medium text-slate-300">
-                    Adresse email
+                    {t('auth.email')}
                   </label>
                   <div className="relative group">
                     <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/20 to-purple-500/20 rounded-xl blur opacity-0 group-hover:opacity-100 transition-opacity"></div>
@@ -154,7 +160,7 @@ export default function Login() {
                 {/* Password */}
                 <div className="space-y-2">
                   <label className="block text-sm font-medium text-slate-300">
-                    Mot de passe
+                    {t('auth.password')}
                   </label>
                   <div className="relative group">
                     <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/20 to-purple-500/20 rounded-xl blur opacity-0 group-hover:opacity-100 transition-opacity"></div>
@@ -181,11 +187,11 @@ export default function Login() {
                     {isLoading ? (
                       <>
                         <div className="w-5 h-5 border-2 border-white/20 border-t-white rounded-full animate-spin mr-3"></div>
-                        <span>Connexion en cours...</span>
+                        <span>{t('auth.loading')}</span>
                       </>
                     ) : (
                       <>
-                        <span>Se connecter</span>
+                        <span>{t('auth.submit')}</span>
                         <svg className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
                         </svg>
@@ -199,7 +205,7 @@ export default function Login() {
 
           {/* Footer */}
           <p className="text-center mt-8 text-slate-500 text-sm">
-            © 2025 LegalPro. Tous droits réservés.
+            {t('auth.footer')}
           </p>
         </div>
       </div>

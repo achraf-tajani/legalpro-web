@@ -4,6 +4,7 @@ import { useAuthStore } from './stores/authStore';
 import { ROUTES } from './config/routes.config';
 import PrivateRoute from './components/PrivateRoute';
 import DashboardLayout from './components/layouts/DashboardLayout';
+import { useTranslation } from 'react-i18next';
 
 const Login = lazy(() => import('./pages/auth/Login'));
 const Dashboard = lazy(() => import('./pages/dashboard/Dashboard'));
@@ -27,11 +28,13 @@ function LoadingScreen() {
 
 function App() {
   const { checkAuth } = useAuthStore();
-
+  const { i18n } = useTranslation();
   useEffect(() => {
     checkAuth();
   }, [checkAuth]);
-
+  // useEffect(() => {
+  //   document.documentElement.dir = i18n.language === 'ar' ? 'rtl' : 'ltr';
+  // }, [i18n.language]);
   return (
     <BrowserRouter>
       <Suspense fallback={<LoadingScreen />}>

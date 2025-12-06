@@ -4,18 +4,22 @@ import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../../stores/authStore';
 import { ROUTES } from '../../config/routes.config';
 import logoAvocat from '../../assets/images/icon_av.svg';
+import LanguageSwitcher from '../common/LanguageSwitcher';
+import { useTranslation } from 'react-i18next';
+
 import { MdDashboard, MdFolder, MdPeople,MdCheckCircle,MdAttachMoney,MdDescription,MdCalendarToday,MdLogout} from 'react-icons/md';
 const navigation = [
-  { name: 'Dashboard', path: ROUTES.DASHBOARD.HOME, icon: MdDashboard },
-  { name: 'Dossiers', path: ROUTES.DASHBOARD.DOSSIERS, icon: MdFolder },
-  { name: 'Clients', path: ROUTES.DASHBOARD.CLIENTS, icon: MdPeople },
-  { name: 'Tâches', path: ROUTES.DASHBOARD.TACHES, icon: MdCheckCircle },
-  { name: 'Factures', path: ROUTES.DASHBOARD.FACTURES, icon: MdAttachMoney },
-  { name: 'Documents', path: ROUTES.DASHBOARD.DOCUMENTS, icon: MdDescription },
-  { name: 'Calendrier', path: ROUTES.DASHBOARD.CALENDRIER, icon: MdCalendarToday },
+  { key: 'dashboard', path: ROUTES.DASHBOARD.HOME, icon: MdDashboard },
+  { key: 'dossiers', path: ROUTES.DASHBOARD.DOSSIERS, icon: MdFolder },
+  { key: 'clients', path: ROUTES.DASHBOARD.CLIENTS, icon: MdPeople },
+  { key: 'taches', path: ROUTES.DASHBOARD.TACHES, icon: MdCheckCircle },
+  { key: 'factures', path: ROUTES.DASHBOARD.FACTURES, icon: MdAttachMoney },
+  { key: 'documents', path: ROUTES.DASHBOARD.DOCUMENTS, icon: MdDescription },
+  { key: 'calendrier', path: ROUTES.DASHBOARD.CALENDRIER, icon: MdCalendarToday },
 ];
 
 export default function DashboardLayout() {
+  const { t } = useTranslation(); 
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const location = useLocation();
   const navigate = useNavigate();
@@ -69,7 +73,7 @@ export default function DashboardLayout() {
               >
                 <Icon className="text-xl" />
                 {sidebarOpen && (
-                  <span className="font-medium">{item.name}</span>
+                  <span className="font-medium">{t(`nav.${item.key}`)}</span>
                 )}
               </Link>
             );
@@ -105,7 +109,7 @@ export default function DashboardLayout() {
               <MdLogout className="text-lg text-slate-400 group-hover:text-red-400 transition-colors" />
               {sidebarOpen && (
                 <span className="text-sm font-medium text-slate-400 group-hover:text-red-400 transition-colors">
-                  Déconnexion
+                  <span>{t('nav.logout')}</span>
                 </span>
               )}
             </div>
@@ -134,7 +138,7 @@ export default function DashboardLayout() {
                 </svg>
                 <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
               </button>
-
+              <LanguageSwitcher variant="minimal" />
               <div className="w-9 h-9 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-lg flex items-center justify-center text-white font-bold text-sm">
                 {user?.email?.charAt(0).toUpperCase() || 'A'}
               </div>
