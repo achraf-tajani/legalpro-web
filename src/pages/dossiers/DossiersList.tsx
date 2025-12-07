@@ -18,13 +18,11 @@ export default function DossiersList() {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const navigate = useNavigate();
 
-  const handleCreateDossier = async (data: CreateDossierDto) => {
+const handleCreateDossier = async (data: CreateDossierDto) => {
+  setIsRefreshing(true);  // ← AJOUTEZ ÇA
   await dossierService.create(data);
-  // Refresh la liste
-  setIsRefreshing(true);
-  window.location.reload(); // Temporaire, on optimisera plus tard
+  window.location.reload();
 };
-
   const getStatutColor = (statut: string) => {
     switch (statut) {
       case 'en_cours':
@@ -67,10 +65,11 @@ export default function DossiersList() {
             {isLoading ? t('common.loading') : t('dossiers.count', { count: dossiers.length })}
           </p>
         </div>
-        <button
-          onClick={() => setIsModalOpen(true)}
-          className="flex items-center space-x-2 px-4 py-3 bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white rounded-xl font-semibold shadow-lg transition-all"
-        >
+          <button
+            onClick={() => setIsModalOpen(true)}
+            disabled={isRefreshing}
+            className="flex items-center space-x-2 px-4 py-3 bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white rounded-xl font-semibold shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+          >
           <MdAdd className="text-xl" />
           <span>{t('dossiers.new')}</span>
         </button>
