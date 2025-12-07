@@ -12,7 +12,10 @@ class DossierService {
     const response = await apiClient.get<Dossier>(API_ENDPOINTS.DOSSIERS.BY_ID(id));
     return response.data;
   }
-
+  async getByClient(clientId: string): Promise<Dossier[]> {
+    const response = await apiClient.get<Dossier[]>(`${API_ENDPOINTS.DOSSIERS.LIST}/client/${clientId}`);
+    return response.data;
+  }
   async create(data: CreateDossierDto): Promise<Dossier> {
     const response = await apiClient.post<Dossier>(API_ENDPOINTS.DOSSIERS.LIST, data);
     return response.data;

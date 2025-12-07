@@ -4,6 +4,15 @@ import { dossierService } from '../../services/dossier.service';
 import type { Dossier } from '../../types/dossier.types';
 import { useProcedures } from '../../hooks/useProcedures';
 import { MdAdd, MdEvent } from 'react-icons/md';
+import { procedureService } from '../../services/procedure.service';
+import CreateProcedureModal from '../../components/features/dossiers/CreateProcedureModal';
+import type { CreateProcedureDto } from '../../types/procedure.types';
+import ViewProcedureModal from '../../components/features/dossiers/ViewProcedureModal';
+import type { Procedure } from '../../types/procedure.types';
+import { useClients } from '../../hooks/useClients';
+import CreateDossierModal from '../../components/features/dossiers/CreateDossierModal';
+import type { UpdateDossierDto } from '../../types/dossier.types';
+import { useTranslation } from 'react-i18next';
 import { 
   MdArrowBack, 
   MdEdit, 
@@ -17,13 +26,48 @@ import {
 } from 'react-icons/md';
 export default function DossierDetail() {
   const { id } = useParams<{ id: string }>();
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [dossier, setDossier] = useState<Dossier | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState('infos');
   const { procedures, isLoading: proceduresLoading } = useProcedures(id);
-
+  const [isProcedureModalOpen, setIsProcedureModalOpen] = useState(false);
+  const handleCreateProcedure = async (data: CreateProcedureDto) => {
+    await procedureService.create(data);
+    window.location.reload(); // Temporaire, on optimisera
+  };
+  const [selectedProcedure, setSelectedProcedure] = useState<Procedure | null>(null);
+  const [isViewModalOpen, setIsViewModalOpen] = useState(false);
+  const handleDeleteProcedure = async (id: string) => {
+    await procedureService.delete(id);
+    window.location.reload();
+  };
+  const [procedureMode, setProcedureMode] = useState<'create' | 'edit'>('create');
+  const [editingProcedure, setEditingProcedure] = useState<Procedure | null>(null);
+  const handleUpdateProcedure = async (id: string, data: CreateProcedureDto) => {
+    await procedureService.update(id, data);
+    window.location.reload();
+  };
+  const { clients } = useClients();
+  const [isDossierModalOpen, setIsDossierModalOpen] = useState(false);
+  const [dossierMode, setDossierMode] = useState<'create' | 'edit'>('edit');
+  const handleUpdateDossier = async (id: string, data: UpdateDossierDto) => {
+    await dossierService.update(id, data);
+    window.location.reload();
+  };
+  const handleDeleteDossier = async () => {
+    if (!window.confirm(t('dossiers.confirmDelete'))) return;
+    
+    try {
+      await dossierService.delete(id!);
+      navigate('/dossiers');
+    } catch (error) {
+      console.error('Erreur lors de la suppression:', error);
+      alert(t('common.error'));
+    }
+  };
   useEffect(() => {
     const fetchDossier = async () => {
       if (!id) return;
@@ -60,7 +104,7 @@ export default function DossierDetail() {
           className="flex items-center space-x-2 text-slate-400 hover:text-white transition-colors"
         >
           <MdArrowBack />
-          <span>Retour aux dossiers</span>
+          <span>{t('common.back')}</span>
         </button>
         <div className="bg-red-500/10 border border-red-500/30 text-red-400 px-4 py-3 rounded-xl">
           {error || 'Dossier introuvable'}
@@ -70,12 +114,12 @@ export default function DossierDetail() {
   }
 
 const tabs = [
-  { key: 'infos', label: 'Informations', icon: <MdInfo className="text-xl" />, count: undefined },
-  { key: 'procedures', label: 'Procédures', icon: <MdGavel className="text-xl" />, count: procedures.length },
-  { key: 'taches', label: 'Tâches', icon: <MdCheckCircle className="text-xl" />, count: 0 },
-  { key: 'documents', label: 'Documents', icon: <MdDescription className="text-xl" />, count: 0 },
-  { key: 'factures', label: 'Factures', icon: <MdAttachMoney className="text-xl" />, count: 0 },
-  { key: 'notes', label: 'Notes', icon: <MdNote className="text-xl" />, count: 0 },
+  { key: 'infos', label: t('dossiers.tabs.infos'), icon: <MdInfo className="text-xl" />, count: undefined },
+  { key: 'procedures', label: t('dossiers.tabs.procedures'), icon: <MdGavel className="text-xl" />, count: procedures.length },
+  { key: 'taches', label: t('dossiers.tabs.taches'), icon: <MdCheckCircle className="text-xl" />, count: 0 },
+  { key: 'documents', label: t('dossiers.tabs.documents'), icon: <MdDescription className="text-xl" />, count: 0 },
+  { key: 'factures', label: t('dossiers.tabs.factures'), icon: <MdAttachMoney className="text-xl" />, count: 0 },
+  { key: 'notes', label: t('dossiers.tabs.notes'), icon: <MdNote className="text-xl" />, count: 0 },
 ];
 
   return (
@@ -92,19 +136,28 @@ const tabs = [
           <div>
             <h1 className="text-3xl font-bold text-white">{dossier.titre}</h1>
             <p className="text-slate-400 mt-1">
-              {dossier.client ? `${dossier.client.nom} ${dossier.client.prenom || ''}` : 'Aucun client'}
+              {dossier.client ? `${dossier.client.nom} ${dossier.client.prenom || ''}` : t('dossiers.noClient')}
             </p>
           </div>
         </div>
 
         <div className="flex items-center space-x-3">
-          <button className="flex items-center space-x-2 px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-lg transition-all">
+          <button 
+            onClick={() => {
+              setDossierMode('edit');
+              setIsDossierModalOpen(true);
+            }}
+            className="cursor-pointer flex items-center space-x-2 px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-lg transition-all"
+          >
             <MdEdit />
-            <span>Modifier</span>
+            <span>{t('common.edit')}</span>
           </button>
-          <button className="flex items-center space-x-2 px-4 py-2 bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded-lg transition-all border border-red-500/30">
+          <button 
+            onClick={handleDeleteDossier}
+            className="flex items-center space-x-2 px-4 py-2 bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded-lg transition-all border border-red-500/30"
+          >
             <MdDelete />
-            <span>Supprimer</span>
+            <span>{t('common.delete')}</span>
           </button>
         </div>
       </div>
@@ -139,34 +192,34 @@ const tabs = [
           {activeTab === 'infos' && (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label className="block text-sm font-semibold text-slate-400 mb-1">Type</label>
+                <label className="block text-sm font-semibold text-slate-400 mb-1">{t('dossiers.detail.type')}</label>
                 <p className="text-white">{dossier.type}</p>
               </div>
               <div>
-                <label className="block text-sm font-semibold text-slate-400 mb-1">Statut</label>
+                <label className="block text-sm font-semibold text-slate-400 mb-1">{t('dossiers.detail.statut')}</label>
                 <p className="text-white">{dossier.statut.replace('_', ' ')}</p>
               </div>
               <div>
-                <label className="block text-sm font-semibold text-slate-400 mb-1">Priorité</label>
+                <label className="block text-sm font-semibold text-slate-400 mb-1">{t('dossiers.detail.priorite')}</label>
                 <p className="text-white capitalize">{dossier.priorite}</p>
               </div>
               <div>
-                <label className="block text-sm font-semibold text-slate-400 mb-1">Domaine</label>
-                <p className="text-white">{dossier.domaine || 'Non renseigné'}</p>
+                <label className="block text-sm font-semibold text-slate-400 mb-1">{t('dossiers.detail.domaine')}</label>
+                <p className="text-white">{dossier.domaine || t('dossiers.detail.notSpecified')}</p>
               </div>
               <div>
-                <label className="block text-sm font-semibold text-slate-400 mb-1">Tribunal</label>
-                <p className="text-white">{dossier.tribunal || 'Non renseigné'}</p>
+                <label className="block text-sm font-semibold text-slate-400 mb-1">{t('dossiers.detail.tribunal')}</label>
+                <p className="text-white">{dossier.tribunal || t('dossiers.detail.notSpecified')}</p>
               </div>
               <div>
-                <label className="block text-sm font-semibold text-slate-400 mb-1">Montant en jeu</label>
+                <label className="block text-sm font-semibold text-slate-400 mb-1">{t('dossiers.detail.montant')}</label>
                 <p className="text-white">
-                  {dossier.montant_en_jeu ? `${dossier.montant_en_jeu.toLocaleString()} €` : 'Non renseigné'}
+                  {dossier.montant_en_jeu ? `${dossier.montant_en_jeu.toLocaleString()} €` : t('dossiers.detail.notSpecified')}
                 </p>
               </div>
               <div className="md:col-span-2">
-                <label className="block text-sm font-semibold text-slate-400 mb-1">Description</label>
-                <p className="text-white">{dossier.description || 'Aucune description'}</p>
+                <label className="block text-sm font-semibold text-slate-400 mb-1">{t('dossiers.detail.description')}</label>
+                <p className="text-white">{dossier.description || t('dossiers.detail.noDescription')}</p>
               </div>
             </div>
           )}
@@ -175,13 +228,16 @@ const tabs = [
             {activeTab === 'procedures' && (
             <div className="space-y-4">
                 <div className="flex items-center justify-between">
-                <h3 className="text-lg font-semibold text-white">
-                    Procédures du dossier ({procedures.length})
-                </h3>
-                <button className="flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white rounded-lg font-semibold shadow-lg transition-all">
+                  <h3 className="text-lg font-semibold text-white">
+                    {t('procedures.list.title', { count: procedures.length })}
+                  </h3>
+                  <button 
+                    onClick={() => setIsProcedureModalOpen(true)}
+                    className="flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white rounded-lg font-semibold shadow-lg transition-all"
+                  >
                     <MdAdd className="text-lg" />
-                    <span>Nouvelle Procédure</span>
-                </button>
+                    <span>{t('procedures.new')}</span>
+                  </button>
                 </div>
 
                 {proceduresLoading ? (
@@ -191,16 +247,20 @@ const tabs = [
                 ) : procedures.length === 0 ? (
                 <div className="text-center py-12 text-slate-500">
                     <MdEvent className="text-6xl text-slate-700 mx-auto mb-4" />
-                    <h3 className="text-xl font-semibold text-white mb-2">Aucune procédure</h3>
-                    <p>Ajoutez une procédure pour ce dossier</p>
+                    <h3 className="text-xl font-semibold text-white mb-2">{t('procedures.list.empty')}</h3>
+                    <p>{t('procedures.list.emptyDescription')}</p>
                 </div>
                 ) : (
                 <div className="space-y-3">
                     {procedures.map((proc) => (
-                    <div
-                        key={proc.id}
-                        className="p-4 bg-slate-800/30 hover:bg-slate-800/50 rounded-xl border border-slate-700 transition-all"
-                    >
+                  <div
+                    key={proc.id}
+                    onClick={() => {
+                      setSelectedProcedure(proc);
+                      setIsViewModalOpen(true);
+                    }}
+                    className="p-4 bg-slate-800/30 hover:bg-slate-800/50 rounded-xl border border-slate-700 transition-all cursor-pointer"
+                  >
                         <div className="flex items-start justify-between">
                         <div className="flex-1">
                             <h4 className="font-semibold text-white mb-1">{proc.titre}</h4>
@@ -249,13 +309,67 @@ const tabs = [
             <div className="text-center py-12 text-slate-500">
                 <div className="text-6xl mb-4">{tabs.find(t => t.key === activeTab)?.icon}</div>
                 <h3 className="text-xl font-semibold text-white mb-2">
-                Module {tabs.find(t => t.key === activeTab)?.label}
+                {t('common.module')} {tabs.find(t => t.key === activeTab)?.label}
                 </h3>
                 <p>Fonctionnalité à venir...</p>
             </div>
             )}
         </div>
       </div>
+      {/* Modal Procédure */}
+      <CreateProcedureModal
+        isOpen={isProcedureModalOpen}
+        onClose={() => {
+          setIsProcedureModalOpen(false);
+          
+          // Si on était en mode edit, on revient au View modal
+          if (procedureMode === 'edit' && editingProcedure) {
+            setIsViewModalOpen(true);
+            setSelectedProcedure(editingProcedure);
+          }
+          
+          // Reset
+          setProcedureMode('create');
+          setEditingProcedure(null);
+        }}
+        onSubmit={handleCreateProcedure}
+        onUpdate={handleUpdateProcedure}
+        dossierId={id!}
+        dossierType={dossier.type}
+        procedure={editingProcedure}
+        mode={procedureMode}
+      />
+
+      {/* Modal View Procédure */}
+        <ViewProcedureModal
+          isOpen={isViewModalOpen}
+          onClose={() => {
+            setIsViewModalOpen(false);
+            setSelectedProcedure(null);
+          }}
+          procedure={selectedProcedure}
+          onEdit={(proc) => {
+            setIsViewModalOpen(false);
+            setEditingProcedure(proc);
+            setProcedureMode('edit');
+            setIsProcedureModalOpen(true);
+          }}
+          onDelete={handleDeleteProcedure}
+        />
+
+      {/* Modal Edit Dossier */}
+      <CreateDossierModal
+        isOpen={isDossierModalOpen}
+        onClose={() => {
+          setIsDossierModalOpen(false);
+          setDossierMode('edit');
+        }}
+        onSubmit={async () => {}} // Pas utilisé en mode edit
+        onUpdate={handleUpdateDossier}
+        clients={clients}
+        dossier={dossier}
+        mode={dossierMode}
+      />
     </div>
   );
 }

@@ -19,7 +19,7 @@ export interface Procedure {
 }
 
 export interface CreateProcedureDto {
-  id_dossier: string;
+  id_dossier: string | undefined;
   titre: string;
   description?: string;
   type: string;

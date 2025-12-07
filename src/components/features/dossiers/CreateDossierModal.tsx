@@ -1,18 +1,29 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { MdClose } from 'react-icons/md';
 import { useTranslation } from 'react-i18next';
-import type { CreateDossierDto } from '../../../types/dossier.types';
-
+import type { CreateDossierDto,UpdateDossierDto,Dossier } from '../../../types/dossier.types';
 interface CreateDossierModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSubmit: (data: CreateDossierDto) => Promise<void>;
+  onUpdate?: (id: string, data: UpdateDossierDto) => Promise<void>;
   clients: Array<{ id: string; nom: string; prenom?: string }>;
+  dossier?: Dossier | null;
+  mode?: 'create' | 'edit';
 }
 
-export default function CreateDossierModal({ isOpen, onClose, onSubmit, clients }: CreateDossierModalProps) {
-const { t, i18n } = useTranslation();
-const isRTL = i18n.language === 'ar';
+export default function CreateDossierModal({ 
+  isOpen, 
+  onClose, 
+  onSubmit,
+  onUpdate,
+  clients,
+  dossier = null,
+  mode = 'create'
+}: CreateDossierModalProps) {
+  
+  const { t, i18n } = useTranslation();
+  const isRTL = i18n.language === 'ar';
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState<CreateDossierDto>({
     titre: '',
@@ -27,14 +38,23 @@ const isRTL = i18n.language === 'ar';
     confidentialite: '',
     id_client: '',
   });
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsLoading(true);
-    try {
-      await onSubmit(formData);
-      onClose();
-      // Reset form
+  useEffect(() => {
+    if (dossier && mode === 'edit') {
+      setFormData({
+        titre: dossier.titre,
+        description: dossier.description || '',
+        type: dossier.type,
+        domaine: dossier.domaine || '',
+        statut: dossier.statut,
+        priorite: dossier.priorite,
+        montant_en_jeu: dossier.montant_en_jeu || undefined,
+        tribunal: dossier.tribunal || '',
+        reference: dossier.reference || '',
+        confidentialite: dossier.confidentialite || '',
+        id_client: dossier.id_client || '',
+      });
+    } else {
+      // Reset en mode create
       setFormData({
         titre: '',
         description: '',
@@ -48,8 +68,21 @@ const isRTL = i18n.language === 'ar';
         confidentialite: '',
         id_client: '',
       });
+    }
+  }, [dossier, mode]);
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+    try {
+      if (mode === 'edit' && dossier && onUpdate) {
+        await onUpdate(dossier.id, formData);
+      } else {
+        await onSubmit(formData);
+      }
+      onClose();
+      // Reset form (le useEffect s'en chargera)
     } catch (error) {
-      console.error('Erreur lors de la création:', error);
+      console.error('Erreur lors de la sauvegarde:', error);
     } finally {
       setIsLoading(false);
     }
@@ -64,7 +97,9 @@ const isRTL = i18n.language === 'ar';
       dir={isRTL ? 'rtl' : 'ltr'}
     >        {/* Header */}
         <div className="bg-gradient-to-r from-indigo-500 to-purple-600 p-6 flex items-center justify-between">
-          <h2 className="text-2xl font-bold text-white">{t('dossiers.new')}</h2>
+          <h2 className="text-2xl font-bold text-white">
+            {mode === 'edit' ? t('dossiers.update') : t('dossiers.new')}
+          </h2>
           <button
             onClick={onClose}
             className="p-2 hover:bg-white/10 rounded-lg transition-colors text-white"
@@ -201,7 +236,7 @@ const isRTL = i18n.language === 'ar';
                 <span>{t('common.loading')}</span>
               </>
             ) : (
-              <span>{t('common.save')}</span>
+              <span>{mode === 'edit' ? t('common.update') : t('common.save')}</span>
             )}
           </button>
         </div>

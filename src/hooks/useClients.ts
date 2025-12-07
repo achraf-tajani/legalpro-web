@@ -1,12 +1,7 @@
 import { useState, useEffect } from 'react';
 import { apiClient } from '../services/api.client';
 import { API_ENDPOINTS } from '../config/api.config';
-
-interface Client {
-  id: string;
-  nom: string;
-  prenom?: string;
-}
+import type { Client } from '../types/client.types';
 
 export function useClients() {
   const [clients, setClients] = useState<Client[]>([]);

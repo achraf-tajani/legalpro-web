@@ -1,0 +1,50 @@
+export const PROCEDURES_PAR_TYPE_DOSSIER = {
+  Civil: [
+    'Assignation',
+    'Requête introductive',
+    'Audience',
+    'Constat d\'huissier',
+    'Mise en demeure',
+    'Référé',
+    'Saisie',
+    'Expertise judiciaire',
+    'Médiation',
+    'Conciliation',
+  ],
+  Pénal: [
+    'Assignation',
+    'Audience',
+    'Plainte simple',
+    'Constitution partie civile',
+    'Garde à vue',
+    'Instruction',
+    'Audition',
+    'Audience pénale',
+  ],
+  Commercial: [
+    'Assignation',
+    'Audience',
+    'Injonction de payer',
+    'Arbitrage',
+    'Résiliation de contrat',
+    'Dépôt de bilan',
+    'Redressement judiciaire',
+    'Liquidation judiciaire',
+  ],
+  Administratif: [
+    'Assignation',
+    'Audience',
+    'Recours gracieux',
+    'Recours hiérarchique',
+    'Recours contentieux',
+    'Réclamation',
+  ],
+} as const;
+
+export const PROCEDURES_COMMUNES = [
+  'Délibéré',
+  'Jugement',
+  'Appel',
+  'Pourvoi en cassation',
+  'Opposition',
+];
