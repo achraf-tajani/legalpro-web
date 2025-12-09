@@ -35,7 +35,8 @@ const resources = {
       'dashboard.prochaines': 'Prochaines Échéances',
       'dashboard.dataComingSoon': 'Données à venir...',
       'dashboard.loadingError': 'Erreur lors du chargement des statistiques',
-
+      'dashboard.recentCases': 'Dossiers récents',
+      'dashboard.upcomingDeadlines': 'Prochaines échéances',
       // Dossiers
       'dossiers.title': 'Dossiers',
       'dossiers.subtitle': 'Gestion de vos dossiers juridiques',
@@ -87,6 +88,11 @@ const resources = {
       'dossiers.detail.notSpecified': 'Non renseigné',
       'dossiers.detail.noDescription': 'Aucune description',
       'dossiers.confirmDelete': 'Êtes-vous sûr de vouloir supprimer ce dossier ? Cette action est irréversible.',
+      'dossiers.statut.ouvert': 'Ouvert',
+      'dossiers.statut.en_cours': 'En cours',
+      'dossiers.statut.suspendu': 'Suspendu',
+      'dossiers.statut.clos': 'Clos',
+      'dossiers.statut.archive': 'Archivé',
 
       // Common
       'common.loading': 'Chargement...',
@@ -104,6 +110,7 @@ const resources = {
       'common.module': 'Module',
       'common.deleting': 'Suppression...',
       'common.close': 'Fermer',
+      'common.create': 'Créer',
 
       // Procédures
       'procedures.new': 'Nouvelle Procédure',
@@ -222,6 +229,94 @@ const resources = {
       'calendar.event': 'Événement',
       'calendar.noEvents': 'Aucun événement à afficher',
       'calendar.showMore': '+{{count}} événement(s)',
+
+      // Factures
+      'factures.title': 'Factures',
+      'factures.count': '{{count}} facture(s)',
+      'factures.new': 'Nouvelle Facture',
+      'factures.empty': 'Aucune facture',
+      'factures.emptyDescription': 'Créez votre première facture pour commencer',
+      'factures.numero': 'Facture N°',
+      'factures.client': 'Client',
+      'factures.dossier': 'Dossier',
+      'factures.dateEmission': 'Date d\'émission',
+      'factures.dateEcheance': 'Date d\'échéance',
+      'factures.montantHT': 'Montant HT',
+      'factures.montantTTC': 'Montant TTC',
+      'factures.statut': 'Statut',
+      'factures.telechargerPDF': 'Télécharger PDF',
+      'factures.voir': 'Voir',
+
+      // Statuts facture
+      'factures.statut.brouillon': 'Brouillon',
+      'factures.statut.envoyee': 'Envoyée',
+      'factures.statut.payee': 'Payée',
+      'factures.statut.en_retard': 'En retard',
+      'factures.statut.annulee': 'Annulée',
+
+      // Création facture
+      'factures.create.title': 'Créer une facture',
+      'factures.create.selectDossier': 'Sélectionner un dossier',
+      'factures.create.selectProcedures': 'Sélectionner les procédures à facturer',
+      'factures.create.addLigne': 'Ajouter une ligne',
+      'factures.create.remise': 'Remise',
+      'factures.create.remisePourcentage': 'Remise en %',
+      'factures.create.remiseMontant': 'Remise en €',
+      'factures.create.raison': 'Raison',
+      'factures.create.generate': 'Générer la facture',
+
+      // Détails facture
+      'factures.detail.lignes': 'Lignes de facturation',
+      'factures.detail.description': 'Description',
+      'factures.detail.quantite': 'Qté',
+      'factures.detail.prixUnitaire': 'Prix unitaire',
+      'factures.detail.total': 'Total',
+      'factures.detail.sousTotal': 'Sous-total HT',
+      'factures.detail.tva': 'TVA',
+      'factures.detail.totalTTC': 'Total TTC',
+      'factures.detail.avanceAvocat': 'Avancé par l\'avocat',
+      'factures.detail.aPayerClient': 'À payer par le client',
+
+      // Notes
+      'notes.title': 'Notes',
+      'notes.new': 'Nouvelle Note',
+      'notes.empty': 'Aucune note',
+      'notes.emptyDescription': 'Ajoutez des notes pour ce dossier',
+      'notes.titre': 'Titre',
+      'notes.contenu': 'Contenu',
+      'notes.create.title': 'Créer une note',
+      'notes.edit.title': 'Modifier la note',
+      'notes.confirmDelete': 'Supprimer cette note ?',
+
+      // Tâches
+      'taches.title': 'Tâches',
+      'taches.new': 'Nouvelle Tâche',
+      'taches.empty': 'Aucune tâche',
+      'taches.emptyDescription': 'Créez votre première tâche',
+      'taches.titre': 'Titre',
+      'taches.description': 'Description',
+      'taches.priorite': 'Priorité',
+      'taches.statut': 'Statut',
+      'taches.dateEcheance': 'Date d\'échéance',
+      'taches.assigneA': 'Assigné à',
+      'taches.progression': 'Progression',
+      'taches.tags': 'Tags',
+      'taches.create.title': 'Créer une tâche',
+      'taches.edit.title': 'Modifier la tâche',
+      'taches.confirmDelete': 'Supprimer cette tâche ?',
+
+      // Priorités
+      'taches.priorite.low': 'Basse',
+      'taches.priorite.normal': 'Normale',
+      'taches.priorite.high': 'Haute',
+      'taches.priorite.critical': 'Critique',
+
+      // Statuts
+      'taches.statut.not_started': 'Non commencée',
+      'taches.statut.in_progress': 'En cours',
+      'taches.statut.pending': 'En attente',
+      'taches.statut.completed': 'Terminée',
+      'taches.statut.cancelled': 'Annulée',
     },
   },
   en: {
@@ -257,7 +352,8 @@ const resources = {
       'dashboard.prochaines': 'Upcoming Deadlines',
       'dashboard.dataComingSoon': 'Data coming soon...',
       'dashboard.loadingError': 'Error loading statistics',
-
+      'dashboard.recentCases': 'Recent cases',
+      'dashboard.upcomingDeadlines': 'Upcoming deadlines',
       // Dossiers
       'dossiers.title': 'Cases',
       'dossiers.subtitle': 'Manage your legal cases',
@@ -309,6 +405,12 @@ const resources = {
       'dossiers.detail.notSpecified': 'Not specified',
       'dossiers.detail.noDescription': 'No description',
       'dossiers.confirmDelete': 'Are you sure you want to delete this case? This action is irreversible.',
+      'dossiers.statut.ouvert': 'Open',
+      'dossiers.statut.en_cours': 'In progress',
+      'dossiers.statut.suspendu': 'Suspended',
+      'dossiers.statut.clos': 'Closed',
+      'dossiers.statut.archive': 'Archived',
+
       // Common
       'common.loading': 'Loading...',
       'common.error': 'An error occurred',
@@ -325,6 +427,7 @@ const resources = {
       'common.module': 'Module',
       'common.deleting': 'Deleting...',
       'common.close': 'Close',
+      'common.create': 'Create',
       // Procédures
       'procedures.new': 'New Procedure',
       'procedures.update': 'Edit Procedure',
@@ -441,6 +544,92 @@ const resources = {
       'calendar.event': 'Event',
       'calendar.noEvents': 'No events to display',
       'calendar.showMore': '+{{count}} event(s)',
+      // Factures
+      'factures.title': 'Invoices',
+      'factures.count': '{{count}} invoice(s)',
+      'factures.new': 'New Invoice',
+      'factures.empty': 'No invoices',
+      'factures.emptyDescription': 'Create your first invoice to get started',
+      'factures.numero': 'Invoice #',
+      'factures.client': 'Client',
+      'factures.dossier': 'Case',
+      'factures.dateEmission': 'Issue date',
+      'factures.dateEcheance': 'Due date',
+      'factures.montantHT': 'Amount excl. tax',
+      'factures.montantTTC': 'Amount incl. tax',
+      'factures.statut': 'Status',
+      'factures.telechargerPDF': 'Download PDF',
+      'factures.voir': 'View',
+
+      // Statuts facture
+      'factures.statut.brouillon': 'Draft',
+      'factures.statut.envoyee': 'Sent',
+      'factures.statut.payee': 'Paid',
+      'factures.statut.en_retard': 'Overdue',
+      'factures.statut.annulee': 'Cancelled',
+
+      // Création facture
+      'factures.create.title': 'Create invoice',
+      'factures.create.selectDossier': 'Select a case',
+      'factures.create.selectProcedures': 'Select procedures to invoice',
+      'factures.create.addLigne': 'Add line',
+      'factures.create.remise': 'Discount',
+      'factures.create.remisePourcentage': 'Discount in %',
+      'factures.create.remiseMontant': 'Discount in €',
+      'factures.create.raison': 'Reason',
+      'factures.create.generate': 'Generate invoice',
+
+      // Détails facture
+      'factures.detail.lignes': 'Invoice lines',
+      'factures.detail.description': 'Description',
+      'factures.detail.quantite': 'Qty',
+      'factures.detail.prixUnitaire': 'Unit price',
+      'factures.detail.total': 'Total',
+      'factures.detail.sousTotal': 'Subtotal excl. tax',
+      'factures.detail.tva': 'VAT',
+      'factures.detail.totalTTC': 'Total incl. tax',
+      'factures.detail.avanceAvocat': 'Advanced by lawyer',
+      'factures.detail.aPayerClient': 'To be paid by client',
+      // Notes
+      'notes.title': 'Notes',
+      'notes.new': 'New Note',
+      'notes.empty': 'No notes',
+      'notes.emptyDescription': 'Add notes for this case',
+      'notes.titre': 'Title',
+      'notes.contenu': 'Content',
+      'notes.create.title': 'Create note',
+      'notes.edit.title': 'Edit note',
+      'notes.confirmDelete': 'Delete this note?',
+
+      // Tâches
+      'taches.title': 'Tasks',
+      'taches.new': 'New Task',
+      'taches.empty': 'No tasks',
+      'taches.emptyDescription': 'Create your first task',
+      'taches.titre': 'Title',
+      'taches.description': 'Description',
+      'taches.priorite': 'Priority',
+      'taches.statut': 'Status',
+      'taches.dateEcheance': 'Due date',
+      'taches.assigneA': 'Assigned to',
+      'taches.progression': 'Progress',
+      'taches.tags': 'Tags',
+      'taches.create.title': 'Create task',
+      'taches.edit.title': 'Edit task',
+      'taches.confirmDelete': 'Delete this task?',
+
+      // Priorités
+      'taches.priorite.low': 'Low',
+      'taches.priorite.normal': 'Normal',
+      'taches.priorite.high': 'High',
+      'taches.priorite.critical': 'Critical',
+
+      // Statuts
+      'taches.statut.not_started': 'Not started',
+      'taches.statut.in_progress': 'In progress',
+      'taches.statut.pending': 'Pending',
+      'taches.statut.completed': 'Completed',
+      'taches.statut.cancelled': 'Cancelled',
     },
   },
   ar: {
@@ -476,7 +665,8 @@ const resources = {
       'dashboard.prochaines': 'المواعيد القادمة',
       'dashboard.dataComingSoon': 'البيانات قادمة قريباً...',
       'dashboard.loadingError': 'خطأ في تحميل الإحصائيات',
-
+      'dashboard.recentCases': 'الملفات الأخيرة',
+      'dashboard.upcomingDeadlines': 'المواعيد القادمة',
       // Dossiers
       'dossiers.title': 'الملفات',
       'dossiers.subtitle': 'إدارة ملفاتك القانونية',
@@ -528,6 +718,12 @@ const resources = {
       'dossiers.detail.notSpecified': 'غير محدد',
       'dossiers.detail.noDescription': 'لا يوجد وصف',
       'dossiers.confirmDelete': 'هل أنت متأكد من حذف هذا الملف؟ هذا الإجراء لا رجعة فيه.',
+      'dossiers.statut.ouvert': 'مفتوح',
+      'dossiers.statut.en_cours': 'قيد التنفيذ',
+      'dossiers.statut.suspendu': 'معلق',
+      'dossiers.statut.clos': 'مغلق',
+      'dossiers.statut.archive': 'مؤرشف',
+  
       // Common
       'common.loading': 'جارٍ التحميل...',
       'common.error': 'حدث خطأ',
@@ -544,6 +740,7 @@ const resources = {
       'common.module': 'وحدة',
       'common.deleting': 'جارٍ الحذف...',
       'common.close': 'إغلاق',
+      'common.create': 'إنشاء',
       // Procédures
       'procedures.new': 'إجراء جديد',
       'procedures.update': 'تعديل الإجراء',
@@ -660,6 +857,92 @@ const resources = {
       'calendar.event': 'حدث',
       'calendar.noEvents': 'لا توجد أحداث للعرض',
       'calendar.showMore': '+{{count}} حدث',
+      // Factures
+      'factures.title': 'الفواتير',
+      'factures.count': '{{count}} فاتورة',
+      'factures.new': 'فاتورة جديدة',
+      'factures.empty': 'لا توجد فواتير',
+      'factures.emptyDescription': 'أنشئ فاتورتك الأولى للبدء',
+      'factures.numero': 'فاتورة رقم',
+      'factures.client': 'العميل',
+      'factures.dossier': 'الملف',
+      'factures.dateEmission': 'تاريخ الإصدار',
+      'factures.dateEcheance': 'تاريخ الاستحقاق',
+      'factures.montantHT': 'المبلغ قبل الضريبة',
+      'factures.montantTTC': 'المبلغ شامل الضريبة',
+      'factures.statut': 'الحالة',
+      'factures.telechargerPDF': 'تحميل PDF',
+      'factures.voir': 'عرض',
+
+      // Statuts facture
+      'factures.statut.brouillon': 'مسودة',
+      'factures.statut.envoyee': 'مُرسلة',
+      'factures.statut.payee': 'مدفوعة',
+      'factures.statut.en_retard': 'متأخرة',
+      'factures.statut.annulee': 'ملغاة',
+
+      // Création facture
+      'factures.create.title': 'إنشاء فاتورة',
+      'factures.create.selectDossier': 'اختر ملفاً',
+      'factures.create.selectProcedures': 'اختر الإجراءات للفوترة',
+      'factures.create.addLigne': 'أضف سطراً',
+      'factures.create.remise': 'تخفيض',
+      'factures.create.remisePourcentage': 'تخفيض بالنسبة المئوية',
+      'factures.create.remiseMontant': 'تخفيض بالمبلغ',
+      'factures.create.raison': 'السبب',
+      'factures.create.generate': 'إنشاء الفاتورة',
+
+      // Détails facture
+      'factures.detail.lignes': 'سطور الفاتورة',
+      'factures.detail.description': 'الوصف',
+      'factures.detail.quantite': 'الكمية',
+      'factures.detail.prixUnitaire': 'السعر الوحدوي',
+      'factures.detail.total': 'المجموع',
+      'factures.detail.sousTotal': 'المجموع الفرعي قبل الضريبة',
+      'factures.detail.tva': 'الضريبة',
+      'factures.detail.totalTTC': 'المجموع شامل الضريبة',
+      'factures.detail.avanceAvocat': 'مدفوع من المحامي',
+      'factures.detail.aPayerClient': 'يدفعه العميل',
+      // Notes
+      'notes.title': 'ملاحظات',
+      'notes.new': 'ملاحظة جديدة',
+      'notes.empty': 'لا توجد ملاحظات',
+      'notes.emptyDescription': 'أضف ملاحظات لهذا الملف',
+      'notes.titre': 'العنوان',
+      'notes.contenu': 'المحتوى',
+      'notes.create.title': 'إنشاء ملاحظة',
+      'notes.edit.title': 'تعديل الملاحظة',
+      'notes.confirmDelete': 'حذف هذه الملاحظة؟',
+
+      // Tâches
+      'taches.title': 'المهام',
+      'taches.new': 'مهمة جديدة',
+      'taches.empty': 'لا توجد مهام',
+      'taches.emptyDescription': 'أنشئ مهمتك الأولى',
+      'taches.titre': 'العنوان',
+      'taches.description': 'الوصف',
+      'taches.priorite': 'الأولوية',
+      'taches.statut': 'الحالة',
+      'taches.dateEcheance': 'تاريخ الاستحقاق',
+      'taches.assigneA': 'مُعيَّن إلى',
+      'taches.progression': 'التقدم',
+      'taches.tags': 'الوسوم',
+      'taches.create.title': 'إنشاء مهمة',
+      'taches.edit.title': 'تعديل المهمة',
+      'taches.confirmDelete': 'حذف هذه المهمة؟',
+
+      // Priorités
+      'taches.priorite.low': 'منخفضة',
+      'taches.priorite.normal': 'عادية',
+      'taches.priorite.high': 'عالية',
+      'taches.priorite.critical': 'حرجة',
+
+      // Statuts
+      'taches.statut.not_started': 'لم تبدأ',
+      'taches.statut.in_progress': 'قيد التنفيذ',
+      'taches.statut.pending': 'معلقة',
+      'taches.statut.completed': 'مكتملة',
+      'taches.statut.cancelled': 'ملغاة',
     },
   },
 };

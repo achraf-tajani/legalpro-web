@@ -4,6 +4,9 @@ import { useAuthStore } from './stores/authStore';
 import { ROUTES } from './config/routes.config';
 import PrivateRoute from './components/PrivateRoute';
 import DashboardLayout from './components/layouts/DashboardLayout';
+import FactureDetail from './components/features/factures/FactureDetail';
+import CreateFacture from './components/features/factures/CreateFacture';
+import { ThemeProvider, useTheme } from './contexts/ThemeContext';
 
 const Login = lazy(() => import('./pages/auth/Login'));
 const Dashboard = lazy(() => import('./pages/dashboard/Dashboard'));
@@ -17,27 +20,30 @@ const DocumentsList = lazy(() => import('./pages/documents/DocumentsList'));
 const Calendrier = lazy(() => import('./pages/calendrier/Calendrier'));
 
 function LoadingScreen() {
+  const { currentTheme } = useTheme();
+  
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 flex items-center justify-center">
+    <div className={`min-h-screen ${currentTheme.colors.bgPrimary} flex items-center justify-center`}>
       <div className="text-center">
-        <div className="w-16 h-16 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-        <p className="text-slate-400">Chargement...</p>
+        <div className={`w-16 h-16 border-4 ${currentTheme.colors.accentPrimary} border-t-transparent rounded-full animate-spin mx-auto mb-4`}></div>
+        <p className={currentTheme.colors.textMuted}>Chargement...</p>
       </div>
     </div>
   );
 }
 
-function App() {
+function AppContent() {
   const { checkAuth } = useAuthStore();
+  
   useEffect(() => {
     checkAuth();
   }, [checkAuth]);
+
   return (
     <BrowserRouter>
       <Suspense fallback={<LoadingScreen />}>
         <Routes>
           <Route path={ROUTES.AUTH.LOGIN} element={<Login />} />
-
           <Route
             path="/"
             element={
@@ -53,14 +59,23 @@ function App() {
             <Route path="clients/:id" element={<ClientDetail />} />
             <Route path="taches" element={<TachesList />} />
             <Route path="factures" element={<FacturesList />} />
+            <Route path="factures/:id" element={<FactureDetail />} />
+            <Route path="factures/new" element={<CreateFacture />} />
             <Route path="documents" element={<DocumentsList />} />
             <Route path="calendrier" element={<Calendrier />} />
           </Route>
-
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </Suspense>
     </BrowserRouter>
+  );
+}
+
+function App() {
+  return (
+    <ThemeProvider>
+      <AppContent />
+    </ThemeProvider>
   );
 }
 

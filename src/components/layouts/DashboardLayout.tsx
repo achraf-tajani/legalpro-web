@@ -6,6 +6,7 @@ import { ROUTES } from '../../config/routes.config';
 import logoAvocat from '../../assets/images/icon_av.svg';
 import LanguageSwitcher from '../common/LanguageSwitcher';
 import { useTranslation } from 'react-i18next';
+import ThemeSelector from '../common/ThemeSelector';
 
 import { MdDashboard, MdFolder, MdPeople,MdCheckCircle,MdAttachMoney,MdDescription,MdCalendarToday,MdLogout} from 'react-icons/md';
 const navigation = [
@@ -138,6 +139,7 @@ export default function DashboardLayout() {
                 </svg>
                 <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
               </button>
+              <ThemeSelector />
               <LanguageSwitcher variant="minimal" />
               <div className="w-9 h-9 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-lg flex items-center justify-center text-white font-bold text-sm">
                 {user?.email?.charAt(0).toUpperCase() || 'A'}

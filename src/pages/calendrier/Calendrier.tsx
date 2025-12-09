@@ -10,7 +10,7 @@ import CreateProcedureModal from '../../components/features/dossiers/CreateProce
 import { procedureService } from '../../services/procedure.service';
 import type { CreateProcedureDto } from '../../types/procedure.types';
 import type { CalendarEvent } from '../../types/calendar.types';
-import { MdAdd, MdFilterList } from 'react-icons/md';
+import { MdAdd, MdFilterList, MdChevronLeft, MdChevronRight } from 'react-icons/md';
 
 // Locales map
 const localesMap = {
@@ -55,20 +55,26 @@ export default function Calendrier() {
   };
 
   const eventStyleGetter = (event: CalendarEvent) => {
-    let className = 'calendar-event-procedure';
+    let backgroundColor = '#4f46e5'; // Violet par défaut
     
     if (event.id.includes('-deadline')) {
-      className = 'calendar-event-deadline';
+      backgroundColor = '#ef4444'; // Rouge pour deadline
     } else if (event.type === 'tache') {
-      className = 'calendar-event-tache';
-    }
-
-    if (event.priorite) {
-      className += ` calendar-priority-${event.priorite}`;
+      backgroundColor = '#10b981'; // Vert pour tâche
     }
 
     return {
-      className,
+      style: {
+        backgroundColor,
+        borderRadius: '6px',
+        opacity: 1,
+        color: 'white',
+        border: 'none',
+        display: 'block',
+        fontSize: '0.875rem',
+        fontWeight: 600,
+        padding: '2px 6px',
+      }
     };
   };
 
@@ -85,7 +91,7 @@ export default function Calendrier() {
     time: t('calendar.time'),
     event: t('calendar.event'),
     noEventsInRange: t('calendar.noEvents'),
-    showMore: (total: number) => t('calendar.showMore', { count: total }),
+    showMore: (total: number) => `+${total} ${t('calendar.more')}`,
   };
 
   if (isLoading) {
@@ -139,6 +145,79 @@ export default function Calendrier() {
           eventPropGetter={eventStyleGetter}
           messages={messages}
           culture={i18n.language}
+          components={{
+            toolbar: (props) => (
+              <div className="flex items-center justify-between p-6 bg-gradient-to-r from-slate-800 to-slate-900 border-b border-slate-700">
+                <div className="flex items-center space-x-2">
+                  <button
+                    onClick={() => props.onNavigate('PREV')}
+                    className="p-2 hover:bg-white/10 rounded-lg transition-colors text-white"
+                  >
+                    <MdChevronLeft className="text-2xl" />
+                  </button>
+                  <button
+                    onClick={() => props.onNavigate('NEXT')}
+                    className="p-2 hover:bg-white/10 rounded-lg transition-colors text-white"
+                  >
+                    <MdChevronRight className="text-2xl" />
+                  </button>
+                  <button
+                    onClick={() => props.onNavigate('TODAY')}
+                    className="px-4 py-2 bg-white/10 hover:bg-white/15 rounded-lg text-white font-semibold transition-all border border-white/20"
+                  >
+                    {t('calendar.today')}
+                  </button>
+                </div>
+
+                <h2 className="text-2xl font-bold text-white">
+                  {props.label}
+                </h2>
+
+                <div className="flex items-center space-x-2">
+                  <button
+                    onClick={() => props.onView('month')}
+                    className={`px-4 py-2 rounded-lg font-semibold transition-all ${
+                      view === 'month'
+                        ? 'bg-indigo-600 text-white'
+                        : 'bg-white/10 text-slate-300 hover:bg-white/15'
+                    }`}
+                  >
+                    {t('calendar.month')}
+                  </button>
+                  <button
+                    onClick={() => props.onView('week')}
+                    className={`px-4 py-2 rounded-lg font-semibold transition-all ${
+                      view === 'week'
+                        ? 'bg-indigo-600 text-white'
+                        : 'bg-white/10 text-slate-300 hover:bg-white/15'
+                    }`}
+                  >
+                    {t('calendar.week')}
+                  </button>
+                  <button
+                    onClick={() => props.onView('day')}
+                    className={`px-4 py-2 rounded-lg font-semibold transition-all ${
+                      view === 'day'
+                        ? 'bg-indigo-600 text-white'
+                        : 'bg-white/10 text-slate-300 hover:bg-white/15'
+                    }`}
+                  >
+                    {t('calendar.day')}
+                  </button>
+                  <button
+                    onClick={() => props.onView('agenda')}
+                    className={`px-4 py-2 rounded-lg font-semibold transition-all ${
+                      view === 'agenda'
+                        ? 'bg-indigo-600 text-white'
+                        : 'bg-white/10 text-slate-300 hover:bg-white/15'
+                    }`}
+                  >
+                    {t('calendar.agenda')}
+                  </button>
+                </div>
+              </div>
+            ),
+          }}
         />
       </div>
 

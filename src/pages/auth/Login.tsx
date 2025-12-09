@@ -8,8 +8,8 @@ import LanguageSwitcher from '../../components/common/LanguageSwitcher';
 
 export default function Login() {
   const { t } = useTranslation();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState('amimi.maroua@gmail.com');
+  const [password, setPassword] = useState('pakfvjrnjmewgrpkssrb');
   
   const { login, isLoading, error, clearError, isAuthenticated } = useAuthStore();
   const navigate = useNavigate();

@@ -34,6 +34,10 @@ export const API_ENDPOINTS = {
     BY_ID: (id: string) => `/taches/${id}`,
     STATS: '/taches/stats',
   },
+  NOTES: {
+    LIST: '/notes',
+    BY_ID: (id: string) => `/notes/${id}`,
+  },
   FACTURES: {
     LIST: '/factures',
     BY_ID: (id: string) => `/factures/${id}`,
