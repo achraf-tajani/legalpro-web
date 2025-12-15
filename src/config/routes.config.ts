@@ -14,5 +14,6 @@ export const ROUTES = {
     FACTURES: '/factures',
     DOCUMENTS: '/documents',
     CALENDRIER: '/calendrier',
+    UTILISATEUR: '/utilisateurs',
   },
 } as const;

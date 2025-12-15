@@ -2,6 +2,7 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './config/i18n.config'
 import './index.css'
+import './styles/theme.css'
 import './styles/calendar.css';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import App from './App.tsx'

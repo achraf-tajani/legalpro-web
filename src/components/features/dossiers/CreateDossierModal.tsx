@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { MdClose } from 'react-icons/md';
 import { useTranslation } from 'react-i18next';
-import type { CreateDossierDto,UpdateDossierDto,Dossier } from '../../../types/dossier.types';
+import type { CreateDossierDto, UpdateDossierDto, Dossier } from '../../../types/dossier.types';
+
 interface CreateDossierModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -35,9 +36,10 @@ export default function CreateDossierModal({
     montant_en_jeu: undefined,
     tribunal: '',
     reference: '',
-    confidentialite: '',
+    confidentialite: 'confidentiel',
     id_client: '',
   });
+
   useEffect(() => {
     if (dossier && mode === 'edit') {
       setFormData({
@@ -54,7 +56,6 @@ export default function CreateDossierModal({
         id_client: dossier.id_client || '',
       });
     } else {
-      // Reset en mode create
       setFormData({
         titre: '',
         description: '',
@@ -65,11 +66,12 @@ export default function CreateDossierModal({
         montant_en_jeu: undefined,
         tribunal: '',
         reference: '',
-        confidentialite: '',
+        confidentialite: 'confidentiel',
         id_client: '',
       });
     }
   }, [dossier, mode]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
@@ -80,7 +82,6 @@ export default function CreateDossierModal({
         await onSubmit(formData);
       }
       onClose();
-      // Reset form (le useEffect s'en chargera)
     } catch (error) {
       console.error('Erreur lors de la sauvegarde:', error);
     } finally {
@@ -91,51 +92,52 @@ export default function CreateDossierModal({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
-    <div 
-      className="bg-slate-900 rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-hidden border border-slate-800"
-      dir={isRTL ? 'rtl' : 'ltr'}
-    >        {/* Header */}
-        <div className="bg-gradient-to-r from-indigo-500 to-purple-600 p-6 flex items-center justify-between">
-          <h2 className="text-2xl font-bold text-white">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-0 sm:p-4 bg-black/70 backdrop-blur-sm">
+      <div 
+        className="bg-theme-secondary rounded-none sm:rounded-2xl shadow-2xl w-full h-full sm:h-auto sm:max-w-2xl sm:max-h-[90vh] overflow-hidden border-theme border flex flex-col"
+        dir={isRTL ? 'rtl' : 'ltr'}
+      >
+        {/* Header */}
+        <div className="bg-accent-gradient p-4 sm:p-6 flex items-center justify-between flex-shrink-0">
+          <h2 className="text-xl sm:text-2xl font-bold text-white">
             {mode === 'edit' ? t('dossiers.update') : t('dossiers.new')}
           </h2>
           <button
             onClick={onClose}
             className="p-2 hover:bg-white/10 rounded-lg transition-colors text-white"
           >
-            <MdClose className="text-2xl" />
+            <MdClose className="text-xl sm:text-2xl" />
           </button>
         </div>
 
-        {/* Form */}
-        <form onSubmit={handleSubmit} className="p-6 space-y-4 overflow-y-auto max-h-[calc(90vh-180px)]">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {/* Form - Scrollable */}
+        <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {/* Titre */}
-            <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-slate-300 mb-2">
+            <div className="sm:col-span-2">
+              <label className="block text-sm font-medium text-theme-secondary mb-2">
                 {t('dossiers.modal.title')} *
               </label>
-              <input
-                type="text"
-                required
-                value={formData.titre}
-                onChange={(e) => setFormData({ ...formData, titre: e.target.value })}
-                className="w-full px-4 py-3 bg-slate-800/50 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
-                placeholder={t('dossiers.modal.titlePlaceholder')}
-              />
+                <input
+                  type="text"
+                  required
+                  value={formData.titre}
+                  onChange={(e) => setFormData({ ...formData, titre: e.target.value })}
+                  className="w-full px-4 py-3 bg-theme-tertiary border-theme border rounded-xl text-theme-primary placeholder-opacity-50 focus:ring-2 focus:ring-offset-0 transition-all"
+                  placeholder={t('dossiers.modal.titlePlaceholder')}
+                />
             </div>
 
             {/* Type */}
             <div>
-              <label className="block text-sm font-medium text-slate-300 mb-2">
+              <label className="block text-sm font-medium text-theme-secondary mb-2">
                 {t('dossiers.modal.type')} *
               </label>
               <select
                 required
                 value={formData.type}
                 onChange={(e) => setFormData({ ...formData, type: e.target.value })}
-                className="w-full px-4 py-3 bg-slate-800/50 border border-slate-700 rounded-xl text-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+                className="w-full px-4 py-3 bg-theme-tertiary border-theme border rounded-xl text-theme-primary focus:ring-2 focus:ring-offset-0 transition-all"
               >
                 <option value="">{t('dossiers.modal.selectType')}</option>
                 <option value="Civil">{t('dossiers.modal.typeCivil')}</option>
@@ -147,13 +149,13 @@ export default function CreateDossierModal({
 
             {/* Client */}
             <div>
-              <label className="block text-sm font-medium text-slate-300 mb-2">
+              <label className="block text-sm font-medium text-theme-secondary mb-2">
                 {t('dossiers.modal.client')}
               </label>
               <select
                 value={formData.id_client}
                 onChange={(e) => setFormData({ ...formData, id_client: e.target.value })}
-                className="w-full px-4 py-3 bg-slate-800/50 border border-slate-700 rounded-xl text-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+                className="w-full px-4 py-3 bg-theme-tertiary border-theme border rounded-xl text-theme-primary focus:ring-2 focus:ring-offset-0 transition-all"
               >
                 <option value="">{t('dossiers.modal.noClient')}</option>
                 {clients.map((client) => (
@@ -166,69 +168,69 @@ export default function CreateDossierModal({
 
             {/* Statut */}
             <div>
-              <label className="block text-sm font-medium text-slate-300 mb-2">
+              <label className="block text-sm font-medium text-theme-secondary mb-2">
                 {t('dossiers.modal.statut')}
               </label>
               <select
                 value={formData.statut}
                 onChange={(e) => setFormData({ ...formData, statut: e.target.value as any })}
-                className="w-full px-4 py-3 bg-slate-800/50 border border-slate-700 rounded-xl text-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+                className="w-full px-4 py-3 bg-theme-tertiary border-theme border rounded-xl text-theme-primary focus:ring-2 focus:ring-offset-0 transition-all"
               >
                 <option value="ouvert">{t('dossiers.modal.statutOuvert')}</option>
                 <option value="en_cours">{t('dossiers.modal.statutEnCours')}</option>
                 <option value="suspendu">{t('dossiers.modal.statutSuspendu')}</option>
-                <option value="clos"> {t('dossiers.modal.statutClos')}</option>
+                <option value="clos">{t('dossiers.modal.statutClos')}</option>
                 <option value="archive">{t('dossiers.modal.statutArchive')}</option>
               </select>
             </div>
 
             {/* Priorité */}
             <div>
-              <label className="block text-sm font-medium text-slate-300 mb-2">
+              <label className="block text-sm font-medium text-theme-secondary mb-2">
                 {t('dossiers.modal.priorite')}
               </label>
               <select
                 value={formData.priorite}
                 onChange={(e) => setFormData({ ...formData, priorite: e.target.value as any })}
-                className="w-full px-4 py-3 bg-slate-800/50 border border-slate-700 rounded-xl text-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+                className="w-full px-4 py-3 bg-theme-tertiary border-theme border rounded-xl text-theme-primary focus:ring-2 focus:ring-offset-0 transition-all"
               >
                 <option value="basse">{t('dossiers.modal.prioriteBasse')}</option>
                 <option value="normale">{t('dossiers.modal.prioriteNormale')}</option>
                 <option value="haute">{t('dossiers.modal.prioriteHaute')}</option>
-                <option value="critique"> {t('dossiers.modal.prioriteCritique')}</option>
+                <option value="critique">{t('dossiers.modal.prioriteCritique')}</option>
               </select>
             </div>
 
             {/* Description */}
-            <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-slate-300 mb-2">
+            <div className="sm:col-span-2">
+              <label className="block text-sm font-medium text-theme-secondary mb-2">
                 {t('dossiers.modal.description')}
               </label>
               <textarea
                 rows={4}
                 value={formData.description}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                className="w-full px-4 py-3 bg-slate-800/50 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+                className="w-full px-4 py-3 bg-theme-tertiary border-theme border rounded-xl text-theme-primary placeholder-opacity-50 focus:ring-2 focus:ring-offset-0 transition-all resize-none"
                 placeholder={t('dossiers.modal.descriptionPlaceholder')}
               />
             </div>
           </div>
         </form>
 
-        {/* Footer */}
-        <div className="p-6 bg-slate-800/50 border-t border-slate-700 flex justify-end space-x-3">
+        {/* Footer - Fixed */}
+        <div className="p-4 sm:p-6 bg-theme-tertiary border-theme border-t flex flex-col-reverse sm:flex-row justify-end gap-3 flex-shrink-0">
           <button
             type="button"
             onClick={onClose}
             disabled={isLoading}
-            className="px-6 py-3 border border-slate-600 rounded-xl text-slate-300 font-semibold hover:bg-slate-700 transition-all disabled:opacity-50"
+            className="w-full sm:w-auto px-6 py-3 border-theme border rounded-xl text-theme-secondary font-semibold hover:bg-theme-tertiary transition-all disabled:opacity-50"
           >
             {t('common.cancel')}
           </button>
           <button
             onClick={handleSubmit}
             disabled={isLoading}
-            className="px-6 py-3 bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white rounded-xl font-semibold shadow-lg transition-all disabled:opacity-50 flex items-center space-x-2"
+            className="w-full sm:w-auto px-6 py-3 bg-accent-gradient hover:bg-accent-gradient-hover text-white rounded-xl font-semibold shadow-lg transition-all disabled:opacity-50 flex items-center justify-center space-x-2"
           >
             {isLoading ? (
               <>

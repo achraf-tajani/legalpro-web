@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
+  import React, { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
 import { type Theme, type ThemeName, themes, defaultTheme } from '../config/themes.config';
 
 interface ThemeContextType {
@@ -17,19 +17,32 @@ interface ThemeProviderProps {
 }
 
 export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
-  const [themeName, setThemeName] = useState<ThemeName>(() => {
+  const [themeName, setThemeNameState] = useState<ThemeName>(() => {
     const savedTheme = localStorage.getItem(THEME_STORAGE_KEY);
-    return (savedTheme as ThemeName) || defaultTheme;
+    if (savedTheme === 'dark' || savedTheme === 'light') {
+      return savedTheme;
+    }
+    return defaultTheme;
   });
 
   const currentTheme = themes[themeName];
 
+  // 🎨 INJECTION DES CSS VARIABLES
   useEffect(() => {
-    localStorage.setItem(THEME_STORAGE_KEY, themeName);
-  }, [themeName]);
+    const root = document.documentElement;
+    
+    // Appliquer toutes les couleurs RGB comme variables CSS
+    Object.entries(currentTheme.colors).forEach(([key, value]) => {
+      root.style.setProperty(`--color-${key}`, value);
+    });
+    
+    // Ajouter l'attribut data-theme pour faciliter le debug
+    root.setAttribute('data-theme', themeName);
+  }, [currentTheme, themeName]);
 
   const setTheme = (newThemeName: ThemeName) => {
-    setThemeName(newThemeName);
+    setThemeNameState(newThemeName);
+    localStorage.setItem(THEME_STORAGE_KEY, newThemeName);
   };
 
   const value: ThemeContextType = {

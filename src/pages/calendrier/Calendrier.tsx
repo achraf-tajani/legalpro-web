@@ -97,7 +97,7 @@ export default function Calendrier() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="w-12 h-12 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin"></div>
+        <div className="w-12 h-12 border-4 border-t-transparent rounded-full animate-spin" style={{ borderColor: 'rgba(var(--color-accentStart), 0.3)', borderTopColor: 'transparent' }}></div>
       </div>
     );
   }
@@ -107,21 +107,21 @@ export default function Calendrier() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-white mb-2">{t('calendar.title')}</h1>
-          <p className="text-slate-400">
+          <h1 className="text-3xl font-bold text-theme-primary mb-2">{t('calendar.title')}</h1>
+          <p className="text-theme-secondary">
             {t('calendar.subtitle', { count: events.length })}
           </p>
         </div>
         <div className="flex items-center space-x-3">
           <button 
-            className="flex items-center space-x-2 px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-lg transition-all"
+            className="flex items-center space-x-2 px-4 py-2 bg-theme-tertiary border border-theme hover:bg-opacity-80 text-theme-primary rounded-lg transition-all"
           >
             <MdFilterList />
             <span>{t('calendar.filters')}</span>
           </button>
           <button 
             onClick={() => setIsProcedureModalOpen(true)}
-            className="flex items-center space-x-2 px-4 py-3 bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white rounded-xl font-semibold shadow-lg transition-all"
+            className="flex items-center space-x-2 px-4 py-3 bg-accent-gradient hover:bg-accent-gradient-hover text-white rounded-xl font-semibold shadow-lg transition-all"
           >
             <MdAdd className="text-xl" />
             <span>{t('procedures.new')}</span>
@@ -130,7 +130,7 @@ export default function Calendrier() {
       </div>
 
       {/* Calendar */}
-      <div className="bg-slate-900/50 backdrop-blur-xl border border-slate-800 rounded-2xl overflow-hidden" style={{ height: 'calc(100vh - 250px)' }}>
+      <div className="bg-theme-surface border-theme border rounded-2xl overflow-hidden" style={{ height: 'calc(100vh - 250px)' }}>
         <Calendar
           localizer={localizer}
           events={events}
@@ -147,7 +147,7 @@ export default function Calendrier() {
           culture={i18n.language}
           components={{
             toolbar: (props) => (
-              <div className="flex items-center justify-between p-6 bg-gradient-to-r from-slate-800 to-slate-900 border-b border-slate-700">
+              <div className="flex items-center justify-between p-6 bg-gradient-to-r from-indigo-500 to-purple-600 border-b border-white/10">
                 <div className="flex items-center space-x-2">
                   <button
                     onClick={() => props.onNavigate('PREV')}
@@ -178,8 +178,8 @@ export default function Calendrier() {
                     onClick={() => props.onView('month')}
                     className={`px-4 py-2 rounded-lg font-semibold transition-all ${
                       view === 'month'
-                        ? 'bg-indigo-600 text-white'
-                        : 'bg-white/10 text-slate-300 hover:bg-white/15'
+                        ? 'bg-white text-indigo-600'
+                        : 'bg-white/10 text-white hover:bg-white/20'
                     }`}
                   >
                     {t('calendar.month')}

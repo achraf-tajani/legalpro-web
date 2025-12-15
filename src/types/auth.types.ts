@@ -1,7 +1,7 @@
 export interface User {
   id: string;
   email: string;
-  type_utilisateur: 'avocat' | 'client' | 'admin';
+  type_utilisateur: 'ADMIN' | 'AVOCAT' | 'CLIENT';
   avocat_id?: string;
   client_id?: string;
 }

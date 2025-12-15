@@ -29,7 +29,7 @@ export default function ThemeSelector() {
       {/* Bouton actuel */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="p-2 hover:bg-slate-800 rounded-lg transition-colors text-slate-400 hover:text-white flex items-center space-x-2"
+        className="p-2 rounded-lg transition-colors text-theme-muted hover:text-theme-primary flex items-center space-x-2"
         title="Changer de thème"
       >
         <span className="text-xl">{currentTheme.icon}</span>
@@ -37,7 +37,7 @@ export default function ThemeSelector() {
 
       {/* Dropdown */}
       {isOpen && (
-        <div className="absolute top-full right-0 mt-2 w-48 bg-slate-900/95 backdrop-blur-xl border border-slate-800 rounded-xl shadow-2xl overflow-hidden z-50">
+        <div className="absolute top-full right-0 mt-2 w-48 bg-theme-surface border-theme border rounded-xl shadow-2xl overflow-hidden z-50">
           <div className="p-2 space-y-1">
             {Object.entries(availableThemes).map(([key, theme]) => {
               const isActive = themeName === key;
@@ -48,17 +48,20 @@ export default function ThemeSelector() {
                   onClick={() => handleThemeChange(key as ThemeName)}
                   className={`w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg transition-all ${
                     isActive
-                      ? 'bg-slate-800 border border-indigo-500/50'
-                      : 'hover:bg-slate-800/50 border border-transparent'
+                      ? 'bg-theme-tertiary border border-accent-gradient'
+                      : 'hover:bg-theme-tertiary border border-transparent'
                   }`}
+                  style={isActive ? {
+                    borderColor: `rgb(var(--color-accentStart))`
+                  } : undefined}
                 >
                   {/* Icône du thème */}
                   <span className="text-2xl">{theme.icon}</span>
                   
-                  {/* Nom + preview */}
+                  {/* Nom */}
                   <div className="flex-1 text-left">
                     <p className={`text-sm font-medium ${
-                      isActive ? 'text-white' : 'text-slate-300'
+                      isActive ? 'text-theme-primary' : 'text-theme-secondary'
                     }`}>
                       {theme.label}
                     </p>
@@ -66,7 +69,7 @@ export default function ThemeSelector() {
 
                   {/* Indicateur actif */}
                   {isActive && (
-                    <div className="w-2 h-2 bg-indigo-500 rounded-full"></div>
+                    <div className="w-2 h-2 rounded-full" style={{ backgroundColor: `rgb(var(--color-accentStart))` }}></div>
                   )}
                 </button>
               );
@@ -74,9 +77,9 @@ export default function ThemeSelector() {
           </div>
 
           {/* Footer info */}
-          <div className="px-3 py-2 bg-slate-800/50 border-t border-slate-700">
-            <p className="text-xs text-slate-500 text-center">
-              Thème : <span className="text-slate-400 font-medium">{currentTheme.label}</span>
+          <div className="px-3 py-2 bg-theme-tertiary border-theme border-t">
+            <p className="text-xs text-theme-muted text-center">
+              Thème : <span className="text-theme-secondary font-medium">{currentTheme.label}</span>
             </p>
           </div>
         </div>

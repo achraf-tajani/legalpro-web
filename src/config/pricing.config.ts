@@ -87,14 +87,14 @@ export function creerLigneProcedure(
 
 // Factory pour créer une ligne de prestation
 export function creerLignePrestation(
-  typePrestation: string,
+  typePrestation: 'procedure' | 'prestation' | 'frais_tiers',
   description: string,
   prix: number,
   quantite: number = 1
 ): LigneFacturation {
   return {
     id: crypto.randomUUID(),
-    type: 'prestation',
+    type: typePrestation,
     description,
     quantite,
     prix_unitaire_original: prix,

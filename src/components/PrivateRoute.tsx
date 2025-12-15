@@ -8,8 +8,9 @@ interface PrivateRouteProps {
 
 export default function PrivateRoute({ children }: PrivateRouteProps) {
   const { isAuthenticated } = useAuthStore();
+  const token = localStorage.getItem('accessToken');
 
-  if (!isAuthenticated) {
+  if (!isAuthenticated || !token) { 
     return <Navigate to={ROUTES.AUTH.LOGIN} replace />;
   }
 

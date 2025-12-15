@@ -39,38 +39,38 @@ export default function AddFraisTiersModal({ isOpen, onClose, onAdd }: AddFraisT
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-      <div className="bg-slate-900 rounded-2xl shadow-2xl w-full max-w-md border border-slate-800" dir={isRTL ? 'rtl' : 'ltr'}>
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-0 sm:p-4 bg-black/70 backdrop-blur-sm">
+      <div className="bg-theme-secondary rounded-none sm:rounded-2xl shadow-2xl w-full h-full sm:h-auto sm:max-w-md sm:max-h-[90vh] border-theme border flex flex-col overflow-hidden" dir={isRTL ? 'rtl' : 'ltr'}>
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-slate-800">
-          <h2 className="text-xl font-bold text-white">Ajouter des frais tiers</h2>
+        <div className="flex items-center justify-between p-4 sm:p-6 border-theme border-b flex-shrink-0 bg-gradient-to-r from-emerald-500 to-teal-600">
+          <h2 className="text-lg sm:text-xl font-bold text-white">{t('factures.frais.title')}</h2>
           <button
             onClick={onClose}
-            className="text-slate-400 hover:text-white transition-colors"
+            className="text-white hover:bg-white/10 p-2 rounded-lg transition-colors"
           >
-            <MdClose className="text-2xl" />
+            <MdClose className="text-xl sm:text-2xl" />
           </button>
         </div>
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="p-6 space-y-4">
+        <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4">
           <div>
-            <label className="block text-sm font-medium text-slate-300 mb-2">
-              Description *
+            <label className="block text-sm font-medium text-theme-secondary mb-2">
+              {t('factures.frais.description')}
             </label>
             <input
               type="text"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              placeholder="Ex: Expertise judiciaire, Frais de greffe..."
-              className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
+              placeholder={t('factures.frais.descriptionPlaceholder')}
+              className="w-full px-4 py-3 bg-theme-tertiary border-theme border rounded-xl text-theme-primary placeholder-opacity-50 focus:ring-2 focus:ring-offset-0 transition-all"
               required
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-slate-300 mb-2">
-              Montant (€) *
+            <label className="block text-sm font-medium text-theme-secondary mb-2">
+             {t('factures.frais.montant')}
             </label>
             <input
               type="number"
@@ -78,26 +78,26 @@ export default function AddFraisTiersModal({ isOpen, onClose, onAdd }: AddFraisT
               min="0"
               value={montant}
               onChange={(e) => setMontant(e.target.value)}
-              placeholder="0.00"
-              className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
+              placeholder= {t('factures.frais.montantPlaceholder')}
+              className="w-full px-4 py-3 bg-theme-tertiary border-theme border rounded-xl text-theme-primary placeholder-opacity-50 focus:ring-2 focus:ring-offset-0 transition-all"
               required
             />
           </div>
 
           {/* Actions */}
-          <div className="flex items-center justify-end space-x-3 pt-4">
+          <div className="flex flex-col-reverse sm:flex-row items-center justify-end gap-3 p-4 sm:p-6 border-theme border-t bg-theme-tertiary flex-shrink-0">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-lg transition-all"
+              className="w-full sm:w-auto px-6 py-3 bg-theme-tertiary hover:bg-opacity-80 text-theme-secondary border-theme border rounded-xl font-semibold transition-all"
             >
               {t('common.cancel')}
             </button>
             <button
               type="submit"
-              className="px-6 py-2 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white rounded-lg font-semibold transition-all"
+              className="w-full sm:w-auto px-6 py-3 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white rounded-xl font-semibold shadow-lg transition-all"
             >
-              Ajouter
+              {t('factures.frais.addBtn')}
             </button>
           </div>
         </form>

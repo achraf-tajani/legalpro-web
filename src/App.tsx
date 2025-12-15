@@ -18,6 +18,7 @@ const TachesList = lazy(() => import('./pages/taches/TachesList'));
 const FacturesList = lazy(() => import('./pages/factures/FacturesList'));
 const DocumentsList = lazy(() => import('./pages/documents/DocumentsList'));
 const Calendrier = lazy(() => import('./pages/calendrier/Calendrier'));
+const UtilisateursList = lazy(() => import('./pages/utilisateurs/Utilisateurslist'));
 
 function LoadingScreen() {
   const { currentTheme } = useTheme();
@@ -25,7 +26,7 @@ function LoadingScreen() {
   return (
     <div className={`min-h-screen ${currentTheme.colors.bgPrimary} flex items-center justify-center`}>
       <div className="text-center">
-        <div className={`w-16 h-16 border-4 ${currentTheme.colors.accentPrimary} border-t-transparent rounded-full animate-spin mx-auto mb-4`}></div>
+        <div className={`w-16 h-16 border-4 ${currentTheme.colors.accentStart} border-t-transparent rounded-full animate-spin mx-auto mb-4`}></div>
         <p className={currentTheme.colors.textMuted}>Chargement...</p>
       </div>
     </div>
@@ -63,6 +64,7 @@ function AppContent() {
             <Route path="factures/new" element={<CreateFacture />} />
             <Route path="documents" element={<DocumentsList />} />
             <Route path="calendrier" element={<Calendrier />} />
+            <Route path="utilisateurs" element={<UtilisateursList />} />
           </Route>
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>

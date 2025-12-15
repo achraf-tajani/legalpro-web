@@ -32,7 +32,6 @@ export default function CreateNoteModal({
 
   const [isSaving, setIsSaving] = useState(false);
 
-  // Reset ou remplir le formulaire
   useEffect(() => {
     if (isOpen) {
       if (mode === 'edit' && note) {
@@ -81,36 +80,36 @@ export default function CreateNoteModal({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-0 sm:p-4 bg-black/70 backdrop-blur-sm">
       <div 
-        className="bg-slate-900 rounded-2xl shadow-2xl w-full max-w-2xl border border-slate-800 max-h-[90vh] overflow-y-auto"
+        className="bg-theme-secondary rounded-none sm:rounded-2xl shadow-2xl w-full h-full sm:h-auto sm:max-w-2xl sm:max-h-[90vh] border-theme border flex flex-col overflow-hidden"
         dir={isRTL ? 'rtl' : 'ltr'}
       >
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-slate-800">
-          <h2 className="text-2xl font-bold text-white">
+        <div className="flex items-center justify-between p-4 sm:p-6 border-theme border-b flex-shrink-0 bg-gradient-to-r from-amber-500 to-orange-600">
+          <h2 className="text-xl sm:text-2xl font-bold text-white">
             {mode === 'edit' ? t('notes.edit.title') : t('notes.create.title')}
           </h2>
           <button
             onClick={onClose}
-            className="text-slate-400 hover:text-white transition-colors"
+            className="text-white hover:bg-white/10 p-2 rounded-lg transition-colors"
           >
-            <MdClose className="text-2xl" />
+            <MdClose className="text-xl sm:text-2xl" />
           </button>
         </div>
 
-        {/* Form */}
-        <form onSubmit={handleSubmit} className="p-6 space-y-6">
+        {/* Form - Scrollable */}
+        <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4 sm:space-y-6">
           {/* Titre */}
           <div>
-            <label className="block text-sm font-medium text-slate-300 mb-2">
+            <label className="block text-sm font-medium text-theme-secondary mb-2">
               {t('notes.titre')} *
             </label>
             <input
               type="text"
               value={formData.titre}
               onChange={(e) => setFormData({ ...formData, titre: e.target.value })}
-              className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all"
+              className="w-full px-4 py-3 bg-theme-tertiary border-theme border rounded-xl text-theme-primary placeholder-opacity-50 focus:ring-2 focus:ring-offset-0 transition-all"
               placeholder={t('notes.titre')}
               required
             />
@@ -118,36 +117,37 @@ export default function CreateNoteModal({
 
           {/* Contenu */}
           <div>
-            <label className="block text-sm font-medium text-slate-300 mb-2">
+            <label className="block text-sm font-medium text-theme-secondary mb-2">
               {t('notes.contenu')}
             </label>
             <textarea
               value={formData.contenu}
               onChange={(e) => setFormData({ ...formData, contenu: e.target.value })}
               rows={10}
-              className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all resize-none"
+              className="w-full px-4 py-3 bg-theme-tertiary border-theme border rounded-xl text-theme-primary placeholder-opacity-50 focus:ring-2 focus:ring-offset-0 transition-all resize-none"
               placeholder={t('notes.contenu')}
             />
           </div>
-
-          {/* Actions */}
-          <div className="flex items-center justify-end space-x-3 pt-4">
-            <button
-              type="button"
-              onClick={onClose}
-              className="px-6 py-3 bg-slate-800 hover:bg-slate-700 text-white rounded-xl font-semibold transition-all"
-            >
-              {t('common.cancel')}
-            </button>
-            <button
-              type="submit"
-              disabled={isSaving}
-              className="px-6 py-3 bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-xl font-semibold shadow-lg transition-all"
-            >
-              {isSaving ? t('common.saving') : (mode === 'edit' ? t('common.update') : t('common.create'))}
-            </button>
-          </div>
         </form>
+
+        {/* Footer - Fixed */}
+        <div className="flex flex-col-reverse sm:flex-row items-center justify-end gap-3 p-4 sm:p-6 border-theme border-t bg-theme-tertiary flex-shrink-0">
+          <button
+            type="button"
+            onClick={onClose}
+            className="w-full sm:w-auto px-6 py-3 bg-theme-tertiary hover:bg-opacity-80 text-theme-secondary border-theme border rounded-xl font-semibold transition-all"
+          >
+            {t('common.cancel')}
+          </button>
+          <button
+            type="submit"
+            onClick={handleSubmit}
+            disabled={isSaving}
+            className="w-full sm:w-auto px-6 py-3 bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-xl font-semibold shadow-lg transition-all"
+          >
+            {isSaving ? t('common.saving') : (mode === 'edit' ? t('common.update') : t('common.create'))}
+          </button>
+        </div>
       </div>
     </div>
   );

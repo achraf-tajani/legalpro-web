@@ -24,8 +24,8 @@ interface InvoiceTemplateProps {
 export default function InvoiceTemplate({ 
   facture, 
   cabinetInfo = {
-    nom: 'Cabinet Juridique',
-    adresse: '123 Avenue des Champs-Élysées, 75008 Paris',
+    nom: 'Cabinet Juridique AMIMI',
+    adresse: 'Rue Ibn Khaldoun, Immeuble Al Amal, Appartement 4',
     telephone: '+33 1 23 45 67 89',
     email: 'contact@cabinet-juridique.fr',
     siret: '123 456 789 00012',

@@ -68,7 +68,7 @@ export default function ClientDetail() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="w-12 h-12 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
+         <div className="w-12 h-12 border-4 border-t-transparent rounded-full animate-spin" style={{ borderColor: 'rgba(var(--color-accentStart), 0.3)', borderTopColor: 'transparent' }}></div>
       </div>
     );
   }
@@ -78,7 +78,7 @@ export default function ClientDetail() {
       <div className="space-y-6">
         <button
           onClick={() => navigate('/clients')}
-          className="flex items-center space-x-2 text-slate-400 hover:text-white transition-colors"
+          className="flex items-center space-x-2 text-theme-muted hover:text-theme-primary transition-colors"
         >
           <MdArrowBack />
           <span>{t('common.back')}</span>
@@ -97,7 +97,7 @@ export default function ClientDetail() {
         <div className="flex items-center space-x-4">
           <button
             onClick={() => navigate('/clients')}
-            className="p-2 hover:bg-slate-800 rounded-lg transition-colors text-slate-400 hover:text-white"
+            className="p-2 rounded-lg transition-colors text-theme-muted hover:text-theme-primary"
           >
             <MdArrowBack className="text-xl" />
           </button>
@@ -111,10 +111,10 @@ export default function ClientDetail() {
           </div>
 
           <div>
-            <h1 className="text-3xl font-bold text-white">
+           <h1 className="text-3xl font-bold text-theme-primary">
               {client.nom} {client.prenom || ''}
             </h1>
-            <p className="text-slate-400 mt-1">
+            <p className="text-theme-secondary mt-1">
               {t(`clients.type.${client.type_client}`)}
             </p>
           </div>
@@ -123,7 +123,7 @@ export default function ClientDetail() {
         <div className="flex items-center space-x-3">
           <button 
             onClick={() => setIsModalOpen(true)}
-            className="flex items-center space-x-2 px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-lg transition-all"
+            className="flex items-center space-x-2 px-4 py-2 bg-theme-tertiary border border-theme hover:bg-opacity-80 text-theme-primary rounded-lg transition-all"
           >
             <MdEdit />
             <span>{t('common.edit')}</span>
@@ -139,7 +139,7 @@ export default function ClientDetail() {
       </div>
 
       {/* Content */}
-      <div className="bg-slate-900/50 backdrop-blur-xl border border-slate-800 rounded-2xl p-6">
+      <div className="bg-theme-surface border-theme border rounded-2xl p-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           
           {/* Contact */}
@@ -149,10 +149,10 @@ export default function ClientDetail() {
                 <MdEmail className="text-xl text-emerald-400" />
               </div>
               <div>
-                <label className="block text-sm font-semibold text-slate-400 mb-1">
+                <label className="block text-sm font-semibold text-theme-secondary mb-1">
                   {t('clients.detail.email')}
                 </label>
-                <p className="text-white">{client.email}</p>
+                 <p className="text-theme-primary">{client.email}</p>
               </div>
             </div>
           )}
@@ -163,10 +163,10 @@ export default function ClientDetail() {
                 <MdPhone className="text-xl text-emerald-400" />
               </div>
               <div>
-                <label className="block text-sm font-semibold text-slate-400 mb-1">
+                <label className="block text-sm font-semibold text-theme-secondary mb-1">
                   {t('clients.detail.telephone')}
                 </label>
-                <p className="text-white">{client.telephone}</p>
+                <p className="text-theme-primary">{client.telephone}</p>
               </div>
             </div>
           )}
@@ -178,10 +178,10 @@ export default function ClientDetail() {
                 <MdLocationOn className="text-xl text-emerald-400" />
               </div>
               <div>
-                <label className="block text-sm font-semibold text-slate-400 mb-1">
+                <label className="block text-sm font-semibold text-theme-secondary mb-1">
                   {t('clients.detail.adresse')}
                 </label>
-                <p className="text-white">
+                <p className="text-theme-primary">
                   {client.adresse && <span>{client.adresse}<br /></span>}
                   {client.code_postal && client.ville && <span>{client.code_postal} {client.ville}<br /></span>}
                   {client.pays && <span>{client.pays}</span>}
@@ -193,24 +193,24 @@ export default function ClientDetail() {
           {/* Type entité */}
           {client.type_entite && (
             <div>
-              <label className="block text-sm font-semibold text-slate-400 mb-1">
+              <label className="block text-sm font-semibold text-theme-secondary mb-1">
                 {t('clients.detail.typeEntite')}
               </label>
-              <p className="text-white">{client.type_entite}</p>
+              <p className="text-theme-primary">{client.type_entite}</p>
             </div>
           )}
 
           {/* Statut */}
           <div>
-            <label className="block text-sm font-semibold text-slate-400 mb-1">
+            <label className="block text-sm font-semibold text-theme-secondary mb-1">
               {t('clients.detail.statut')}
             </label>
             <span className={`inline-flex px-3 py-1 rounded-full text-xs font-medium border ${
               client.statut === 'actif' 
-                ? 'bg-green-500/10 text-green-400 border-green-500/30'
+                ? 'badge-green'
                 : client.statut === 'inactif'
-                ? 'bg-gray-500/10 text-gray-400 border-gray-500/30'
-                : 'bg-yellow-500/10 text-yellow-400 border-yellow-500/30'
+                ? 'badge-gray'
+                : 'badge-yellow'
             }`}>
               {t(`clients.statut.${client.statut}`)}
             </span>
@@ -218,7 +218,7 @@ export default function ClientDetail() {
 
           {/* Montant total facturé */}
           <div>
-            <label className="block text-sm font-semibold text-slate-400 mb-1">
+            <label className="block text-sm font-semibold text-theme-secondary mb-1">
               {t('clients.detail.montantTotal')}
             </label>
             <p className="text-white text-lg font-semibold">
@@ -228,10 +228,10 @@ export default function ClientDetail() {
 
           {/* Date inscription */}
           <div>
-            <label className="block text-sm font-semibold text-slate-400 mb-1">
+            <label className="block text-sm font-semibold text-theme-secondary mb-1">
               {t('clients.detail.dateInscription')}
             </label>
-            <p className="text-white">
+            <p className="text-theme-primary">
               {new Date(client.date_inscription).toLocaleDateString('fr-FR', {
                 day: '2-digit',
                 month: 'long',
@@ -243,18 +243,18 @@ export default function ClientDetail() {
       </div>
 
       {/* Dossiers liés */}
-      <div className="bg-slate-900/50 backdrop-blur-xl border border-slate-800 rounded-2xl p-6">
-        <h3 className="text-lg font-semibold text-white mb-4">
+      <div className="bg-theme-surface border-theme border rounded-2xl p-6">
+        <h3 className="text-lg font-semibold text-theme-primary mb-4">
           {t('clients.detail.dossiers')} ({dossiers.length})
         </h3>
 
         {dossierLoading ? (
           <div className="text-center py-8">
-            <div className="w-8 h-8 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin mx-auto"></div>
+            <div className="w-8 h-8 border-4 border-t-transparent rounded-full animate-spin mx-auto" style={{ borderColor: 'rgba(var(--color-accentStart), 0.3)', borderTopColor: 'transparent' }}></div>
           </div>
         ) : dossiers.length === 0 ? (
-          <div className="text-center py-8 text-slate-500">
-            <MdFolder className="text-5xl text-slate-700 mx-auto mb-3" />
+         <div className="text-center py-8 text-theme-muted">
+            <MdFolder className="text-5xl opacity-50 mx-auto mb-3" />
             <p>{t('clients.detail.noDossiers')}</p>
           </div>
         ) : (
@@ -263,23 +263,23 @@ export default function ClientDetail() {
               <div
                 key={dossier.id}
                 onClick={() => navigate(`/dossiers/${dossier.id}`)}
-                className="flex items-center justify-between p-4 bg-slate-800/30 hover:bg-slate-800/50 rounded-xl transition-all cursor-pointer border border-transparent hover:border-emerald-500/30"
+               className="flex items-center justify-between p-4 bg-theme-tertiary hover:bg-opacity-80 rounded-xl transition-all cursor-pointer border-theme border hover:border-opacity-80"
               >
                 <div className="flex items-center space-x-3">
                   <div className="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-lg flex items-center justify-center">
                     <MdFolder className="text-xl text-white" />
                   </div>
                   <div>
-                    <h4 className="text-white font-semibold">{dossier.titre}</h4>
-                    <p className="text-sm text-slate-400">{dossier.type}</p>
+                    <h4 className="text-theme-primary font-semibold">{dossier.titre}</h4>
+                     <p className="text-sm text-theme-secondary">{dossier.type}</p>
                   </div>
                 </div>
                 <div className="flex items-center space-x-2">
                   <span className={`px-3 py-1 rounded-full text-xs font-medium border ${
-                    dossier.statut === 'en_cours' ? 'bg-blue-500/10 text-blue-400 border-blue-500/30' :
-                    dossier.statut === 'ouvert' ? 'bg-green-500/10 text-green-400 border-green-500/30' :
-                    dossier.statut === 'clos' ? 'bg-gray-500/10 text-gray-400 border-gray-500/30' :
-                    'bg-yellow-500/10 text-yellow-400 border-yellow-500/30'
+                    dossier.statut === 'en_cours' ? 'badge-blue' :
+                    dossier.statut === 'ouvert' ? 'badge-green' :
+                    dossier.statut === 'clos' ? 'badge-gray' :
+                    'badge-yellow'
                   }`}>
                     {dossier.statut.replace('_', ' ')}
                   </span>

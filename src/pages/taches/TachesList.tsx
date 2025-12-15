@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useTaches } from '../../hooks/useTaches';
 import { useDossiers } from '../../hooks/useDossiers';
@@ -10,7 +9,6 @@ import { MdAdd, MdEdit, MdDelete, MdCheckCircle } from 'react-icons/md';
 
 export default function TachesList() {
   const { t } = useTranslation();
-  const navigate = useNavigate();
   const { taches, isLoading } = useTaches();
   const { dossiers } = useDossiers();
 
@@ -50,7 +48,7 @@ export default function TachesList() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+        <div className="w-12 h-12 border-4 border-t-transparent rounded-full animate-spin" style={{ borderColor: 'rgba(var(--color-accentStart), 0.3)', borderTopColor: 'transparent' }}></div>
       </div>
     );
   }
@@ -60,8 +58,8 @@ export default function TachesList() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-white mb-2">{t('taches.title')}</h1>
-          <p className="text-slate-400">
+          <h1 className="text-3xl font-bold text-theme-primary mb-2">{t('taches.title')}</h1>
+          <p className="text-theme-secondary">
             {tachesFiltrees.length} tâche(s)
           </p>
         </div>
@@ -79,19 +77,19 @@ export default function TachesList() {
       </div>
 
       {/* Filtres */}
-      <div className="bg-slate-900/50 backdrop-blur-xl border border-slate-800 rounded-2xl p-6">
+      <div className="bg-theme-surface border-theme border rounded-2xl p-6">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {/* Filtre Statut */}
           <div>
-            <label className="block text-sm font-medium text-slate-300 mb-2">
+            <label className="block text-sm font-medium text-theme-secondary mb-2">
               {t('taches.statut')}
             </label>
             <select
               value={filterStatut}
               onChange={(e) => setFilterStatut(e.target.value)}
-              className="w-full px-4 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white"
+              className="w-full px-4 py-2 bg-theme-tertiary border border-slate-700 rounded-lg text-theme-primary"
             >
-              <option value="all">Tous</option>
+              <option value="all">{t('common.all')}</option>
               <option value="not_started">{t('taches.statut.not_started')}</option>
               <option value="in_progress">{t('taches.statut.in_progress')}</option>
               <option value="pending">{t('taches.statut.pending')}</option>
@@ -102,15 +100,15 @@ export default function TachesList() {
 
           {/* Filtre Priorité */}
           <div>
-            <label className="block text-sm font-medium text-slate-300 mb-2">
+            <label className="block text-sm font-medium text-theme-secondary mb-2">
               {t('taches.priorite')}
             </label>
             <select
               value={filterPriorite}
               onChange={(e) => setFilterPriorite(e.target.value)}
-              className="w-full px-4 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white"
+              className="w-full px-4 py-2 bg-theme-tertiary border border-slate-700 rounded-lg text-theme-primary"
             >
-              <option value="all">Toutes</option>
+              <option value="all">{t('common.alls')}</option>
               <option value="low">{t('taches.priorite.low')}</option>
               <option value="normal">{t('taches.priorite.normal')}</option>
               <option value="high">{t('taches.priorite.high')}</option>
@@ -120,15 +118,15 @@ export default function TachesList() {
 
           {/* Filtre Dossier */}
           <div>
-            <label className="block text-sm font-medium text-slate-300 mb-2">
-              Dossier
+            <label className="block text-sm font-medium text-theme-secondary mb-2">
+              {t('procedures.modal.dossier')}
             </label>
             <select
               value={filterDossier}
               onChange={(e) => setFilterDossier(e.target.value)}
-              className="w-full px-4 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white"
+              className="w-full px-4 py-2 bg-theme-tertiary border border-slate-700 rounded-lg text-theme-primary"
             >
-              <option value="all">Tous</option>
+              <option value="all">{t('common.all')}</option>
               {dossiers.map(d => (
                 <option key={d.id} value={d.id}>{d.titre}</option>
               ))}
@@ -139,10 +137,10 @@ export default function TachesList() {
 
       {/* Liste des tâches */}
       {tachesFiltrees.length === 0 ? (
-        <div className="bg-slate-900/50 backdrop-blur-xl border border-slate-800 rounded-2xl p-12">
-          <div className="text-center text-slate-500">
-            <MdCheckCircle className="text-6xl text-slate-700 mx-auto mb-4" />
-            <h3 className="text-xl font-semibold text-white mb-2">{t('taches.empty')}</h3>
+        <div className="bg-theme-surface border-theme border rounded-2xl p-12">
+          <div className="text-center text-theme-muted">
+            <MdCheckCircle className="text-6xl opacity-50 mx-auto mb-4" />
+            <h3 className="text-xl font-semibold text-theme-primary mb-2">{t('taches.empty')}</h3>
             <p className="mb-4">{t('taches.emptyDescription')}</p>
             <button
               onClick={() => {
@@ -150,7 +148,7 @@ export default function TachesList() {
                 setEditingTache(null);
                 setIsModalOpen(true);
               }}
-              className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-all"
+               className="px-4 py-2 bg-accent-gradient hover:bg-accent-gradient-hover text-white rounded-lg transition-all"
             >
               {t('taches.new')}
             </button>
@@ -164,38 +162,38 @@ export default function TachesList() {
             return (
               <div
                 key={tache.id}
-                className="bg-slate-900/50 backdrop-blur-xl border border-slate-800 rounded-xl p-6 hover:border-slate-700 transition-all"
+                className="bg-theme-surface border-theme border rounded-xl p-6 hover:border-opacity-80 transition-all"
               >
                 <div className="flex items-start justify-between">
                   {/* Info tâche */}
                   <div className="flex-1">
                     <div className="flex items-center space-x-3 mb-2">
-                      <h3 className="text-xl font-bold text-white">
+                      <h3 className="text-xl font-bold text-theme-primary">
                         {tache.titre}
                       </h3>
                       <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                        tache.priorite === 'critical' ? 'bg-red-500/20 text-red-400 border border-red-500/30' :
-                        tache.priorite === 'high' ? 'bg-orange-500/20 text-orange-400 border border-orange-500/30' :
-                        tache.priorite === 'normal' ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30' :
-                        'bg-slate-500/20 text-slate-400 border border-slate-500/30'
+                        tache.priorite === 'critical' ? 'badge-red' :
+                        tache.priorite === 'high' ? 'badge-orange' :
+                        tache.priorite === 'normal' ? 'badge-blue' :
+                        'badge-gray'
                       }`}>
                         {t(`taches.priorite.${tache.priorite}`)}
                       </span>
                       <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                        tache.statut === 'completed' ? 'bg-green-500/20 text-green-400 border border-green-500/30' :
-                        tache.statut === 'in_progress' ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30' :
-                        tache.statut === 'cancelled' ? 'bg-red-500/20 text-red-400 border border-red-500/30' :
-                        'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30'
+                        tache.statut === 'completed' ? 'badge-green' :
+                        tache.statut === 'in_progress' ? 'badge-blue' :
+                        tache.statut === 'cancelled' ? 'badge-red' :
+                        'badge-yellow'
                       }`}>
                         {t(`taches.statut.${tache.statut}`)}
                       </span>
                     </div>
                     
                     {tache.description && (
-                      <p className="text-slate-400 mb-2 line-clamp-2">{tache.description}</p>
+                       <p className="text-theme-secondary mb-2 line-clamp-2">{tache.description}</p>
                     )}
                     
-                    <div className="flex items-center space-x-4 text-sm text-slate-500">
+                    <div className="flex items-center space-x-4 text-sm text-theme-muted">
                       <span>📁 {dossier?.titre || 'Dossier inconnu'}</span>
                       {tache.date_echeance && (
                         <span>📅 {new Date(tache.date_echeance).toLocaleDateString('fr-FR')}</span>
@@ -212,14 +210,14 @@ export default function TachesList() {
                         setMode('edit');
                         setIsModalOpen(true);
                       }}
-                      className="p-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-all"
+                      className="p-2 bg-theme-tertiary hover:bg-opacity-80 text-theme-primary rounded-lg transition-all"
                       title="Modifier"
                     >
                       <MdEdit className="text-xl" />
                     </button>
                     <button
                       onClick={() => handleDelete(tache.id)}
-                      className="p-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-all"
+                      className="p-2 bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded-lg transition-all border border-red-500/30"
                       title="Supprimer"
                     >
                       <MdDelete className="text-xl" />
@@ -230,9 +228,9 @@ export default function TachesList() {
                 {/* Barre de progression */}
                 {tache.progression > 0 && (
                   <div className="mt-4">
-                    <div className="w-full bg-slate-800 rounded-full h-2">
+                    <div className="w-full bg-theme-tertiary rounded-full h-2">
                       <div
-                        className="bg-blue-600 h-2 rounded-full transition-all"
+                        className="h-2 rounded-full transition-all bg-accent-gradient"
                         style={{ width: `${tache.progression}%` }}
                       />
                     </div>

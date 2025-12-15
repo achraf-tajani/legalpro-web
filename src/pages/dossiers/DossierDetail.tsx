@@ -16,6 +16,7 @@ import { noteService } from '../../services/note.service';
 import { tacheService } from '../../services/tache.service';
 import type { Tache, CreateTacheDto, UpdateTacheDto } from '../../types/tache.types';
 import CreateTacheModal from '../../components/features/taches/CreateTacheModal';
+import DossierDocumentsSection from '../../components/features/dossiers/DossierDocumentsSection';
 
 import { 
   MdArrowBack, 
@@ -34,6 +35,7 @@ import { useFacturesByDossier } from '../../hooks/useFactures';
 import { useNotesByDossier } from '../../hooks/useNotes';
 import { useTachesByDossier } from '../../hooks/useTaches';
 import type { CreateNoteDto, Note, UpdateNoteDto } from '../../types/note.types';
+import { useDocuments } from '../../hooks/useDocuments';
 export default function DossierDetail() {
   const { id } = useParams<{ id: string }>();
   const { t } = useTranslation();
@@ -43,6 +45,7 @@ export default function DossierDetail() {
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState('infos');
   const { procedures, isLoading: proceduresLoading } = useProcedures(id);
+  const { documents } = useDocuments(id);
   const [isProcedureModalOpen, setIsProcedureModalOpen] = useState(false);
   const { factures } = useFacturesByDossier(id!);
   const { notes } = useNotesByDossier(id);
@@ -139,7 +142,9 @@ export default function DossierDetail() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="w-12 h-12 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin"></div>
+        <div className="w-12 h-12 border-4 border-t-transparent rounded-full animate-spin" 
+            style={{ borderColor: `rgba(var(--color-accentStart), 0.3)`, borderTopColor: 'transparent' }}>
+        </div>
       </div>
     );
   }
@@ -149,7 +154,7 @@ export default function DossierDetail() {
       <div className="space-y-6">
         <button
           onClick={() => navigate('/dossiers')}
-          className="flex items-center space-x-2 text-slate-400 hover:text-white transition-colors"
+          className="flex items-center space-x-2 text-theme-muted hover:text-theme-primary transition-colors"
         >
           <MdArrowBack />
           <span>{t('common.back')}</span>
@@ -165,7 +170,7 @@ const tabs = [
   { key: 'infos', label: t('dossiers.tabs.infos'), icon: <MdInfo className="text-xl" />, count: undefined },
   { key: 'procedures', label: t('dossiers.tabs.procedures'), icon: <MdGavel className="text-xl" />, count: procedures.length },
   { key: 'taches', label: t('dossiers.tabs.taches'), icon: <MdCheckCircle className="text-xl" />, count: taches.length },
-  { key: 'documents', label: t('dossiers.tabs.documents'), icon: <MdDescription className="text-xl" />, count: 0 },
+  { key: 'documents', label: t('dossiers.tabs.documents'), icon: <MdDescription className="text-xl" />, count: documents.length },
   { key: 'factures', label: t('dossiers.tabs.factures'), icon: <MdAttachMoney className="text-xl" />, count: factures.length },
   { key: 'notes', label: t('dossiers.tabs.notes'), icon: <MdNote className="text-xl" />, count: notes.length },
 ];
@@ -173,101 +178,104 @@ const tabs = [
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-4">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div className="flex items-center space-x-3 sm:space-x-4">
           <button
             onClick={() => navigate('/dossiers')}
-            className="p-2 hover:bg-slate-800 rounded-lg transition-colors text-slate-400 hover:text-white"
+            className="p-2 rounded-lg transition-colors text-theme-muted hover:text-theme-primary"
           >
             <MdArrowBack className="text-xl" />
           </button>
-          <div>
-            <h1 className="text-3xl font-bold text-white">{dossier.titre}</h1>
-            <p className="text-slate-400 mt-1">
+          <div className="min-w-0 flex-1">
+            <h1 className="text-2xl sm:text-3xl font-bold text-theme-primary truncate">{dossier.titre}</h1>
+            <p className="text-theme-secondary mt-1 text-sm sm:text-base truncate">
               {dossier.client ? `${dossier.client.nom} ${dossier.client.prenom || ''}` : t('dossiers.noClient')}
             </p>
           </div>
         </div>
 
-        <div className="flex items-center space-x-3">
+        <div className="flex items-center space-x-2 sm:space-x-3">
           <button 
             onClick={() => {
               setDossierMode('edit');
               setIsDossierModalOpen(true);
             }}
-            className="cursor-pointer flex items-center space-x-2 px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-lg transition-all"
+            className="flex items-center space-x-2 px-3 sm:px-4 py-2 bg-theme-tertiary hover:bg-opacity-80 text-theme-primary rounded-lg transition-all text-sm sm:text-base"
           >
             <MdEdit />
-            <span>{t('common.edit')}</span>
+            <span className="hidden sm:inline">{t('common.edit')}</span>
           </button>
           <button 
             onClick={handleDeleteDossier}
-            className="flex items-center space-x-2 px-4 py-2 bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded-lg transition-all border border-red-500/30"
+            className="flex items-center space-x-2 px-3 sm:px-4 py-2 bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded-lg transition-all border border-red-500/30 text-sm sm:text-base"
           >
             <MdDelete />
-            <span>{t('common.delete')}</span>
+            <span className="hidden sm:inline">{t('common.delete')}</span>
           </button>
         </div>
       </div>
-
-      {/* Tabs */}
-      <div className="bg-slate-900/50 backdrop-blur-xl border border-slate-800 rounded-2xl overflow-hidden">
-        <div className="border-b border-slate-800 flex overflow-x-auto">
-          {tabs.map((tab) => (
-            <button
-              key={tab.key}
-              onClick={() => setActiveTab(tab.key)}
-              className={`flex items-center space-x-2 px-6 py-4 font-medium transition-all whitespace-nowrap border-b-2 ${
-                activeTab === tab.key
-                  ? 'border-indigo-500 text-white bg-slate-800/50'
-                  : 'border-transparent text-slate-400 hover:text-white hover:bg-slate-800/30'
-              }`}
-            >
-              <span className="text-xl">{tab.icon}</span>
-              <span>{tab.label}</span>
-              {tab.count !== undefined && tab.count > 0 && (
-                <span className="px-2 py-0.5 bg-indigo-500/20 text-indigo-400 rounded-full text-xs">
-                  {tab.count}
-                </span>
-              )}
-            </button>
-          ))}
+        {/* Tabs */}
+        <div className="bg-theme-surface border-theme border rounded-2xl overflow-hidden">
+          <div className="border-theme border-b flex overflow-x-auto scrollbar-hide">
+            {tabs.map((tab) => (
+              <button
+                key={tab.key}
+                onClick={() => setActiveTab(tab.key)}
+                className={`cursor-pointer flex items-center space-x-2 px-4 sm:px-6 py-3 sm:py-4 font-medium transition-all whitespace-nowrap border-b-2 text-sm sm:text-base ${
+                  activeTab === tab.key
+                    ? 'border-accent-start text-theme-primary bg-theme-tertiary'
+                    : 'border-transparent text-theme-muted hover:text-theme-primary hover:bg-theme-tertiary hover:bg-opacity-30'
+                }`}
+                style={activeTab === tab.key ? { borderBottomColor: `rgb(var(--color-accentStart))` } : undefined}
+              >
+                <span className="text-lg sm:text-xl">{tab.icon}</span>
+                <span className="hidden sm:inline">{tab.label}</span>
+                {tab.count !== undefined && tab.count > 0 && (
+                  <span className="px-2 py-0.5 rounded-full text-xs" style={{ 
+                    backgroundColor: `rgba(var(--color-accentStart), 0.2)`,
+                    color: `rgb(var(--color-accentStart))`
+                  }}>
+                    {tab.count}
+                  </span>
+                )}
+              </button>
+            ))}
         </div>
 
         {/* Content */}
-        <div className="p-6">
+        <div className="p-4 sm:p-6">
           {/* Onglet Infos */}
           {activeTab === 'infos' && (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
               <div>
-                <label className="block text-sm font-semibold text-slate-400 mb-1">{t('dossiers.detail.type')}</label>
-                <p className="text-white">{dossier.type}</p>
+                <label className="block text-sm font-semibold text-theme-secondary mb-1">{t('dossiers.detail.type')}</label>
+                <p className="text-theme-primary">{dossier.type}</p>
               </div>
               <div>
-                <label className="block text-sm font-semibold text-slate-400 mb-1">{t('dossiers.detail.statut')}</label>
-                <p className="text-white">{dossier.statut.replace('_', ' ')}</p>
+                <label className="block text-sm font-semibold text-theme-secondary mb-1">{t('dossiers.detail.statut')}</label>
+                <p className="text-theme-primary">{dossier.statut.replace('_', ' ')}</p>
               </div>
               <div>
-                <label className="block text-sm font-semibold text-slate-400 mb-1">{t('dossiers.detail.priorite')}</label>
-                <p className="text-white capitalize">{dossier.priorite}</p>
+                <label className="block text-sm font-semibold text-theme-secondary mb-1">{t('dossiers.detail.priorite')}</label>
+                <p className="text-theme-primary capitalize">{dossier.priorite}</p>
               </div>
               <div>
-                <label className="block text-sm font-semibold text-slate-400 mb-1">{t('dossiers.detail.domaine')}</label>
-                <p className="text-white">{dossier.domaine || t('dossiers.detail.notSpecified')}</p>
+                <label className="block text-sm font-semibold text-theme-secondary mb-1">{t('dossiers.detail.domaine')}</label>
+                <p className="text-theme-primary">{dossier.domaine || t('dossiers.detail.notSpecified')}</p>
               </div>
               <div>
-                <label className="block text-sm font-semibold text-slate-400 mb-1">{t('dossiers.detail.tribunal')}</label>
-                <p className="text-white">{dossier.tribunal || t('dossiers.detail.notSpecified')}</p>
+                <label className="block text-sm font-semibold text-theme-secondary mb-1">{t('dossiers.detail.tribunal')}</label>
+                <p className="text-theme-primary">{dossier.tribunal || t('dossiers.detail.notSpecified')}</p>
               </div>
               <div>
-                <label className="block text-sm font-semibold text-slate-400 mb-1">{t('dossiers.detail.montant')}</label>
-                <p className="text-white">
+                <label className="block text-sm font-semibold text-theme-secondary mb-1">{t('dossiers.detail.montant')}</label>
+                <p className="text-theme-primary">
                   {dossier.montant_en_jeu ? `${dossier.montant_en_jeu.toLocaleString()} €` : t('dossiers.detail.notSpecified')}
                 </p>
               </div>
-              <div className="md:col-span-2">
-                <label className="block text-sm font-semibold text-slate-400 mb-1">{t('dossiers.detail.description')}</label>
-                <p className="text-white">{dossier.description || t('dossiers.detail.noDescription')}</p>
+              <div className="sm:col-span-2">
+                <label className="block text-sm font-semibold text-theme-secondary mb-1">{t('dossiers.detail.description')}</label>
+                <p className="text-theme-primary">{dossier.description || t('dossiers.detail.noDescription')}</p>
               </div>
             </div>
           )}
@@ -276,12 +284,12 @@ const tabs = [
             {activeTab === 'procedures' && (
             <div className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <h3 className="text-lg font-semibold text-white">
+                  <h3 className="text-lg font-semibold text-theme-primary">
                     {t('procedures.list.title', { count: procedures.length })}
                   </h3>
                   <button 
                     onClick={() => setIsProcedureModalOpen(true)}
-                    className="flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white rounded-lg font-semibold shadow-lg transition-all"
+                    className="flex items-center space-x-2 px-4 py-2 bg-accent-gradient hover:bg-accent-gradient-hover text-white rounded-lg font-semibold shadow-lg transition-all"
                   >
                     <MdAdd className="text-lg" />
                     <span>{t('procedures.new')}</span>
@@ -290,12 +298,12 @@ const tabs = [
 
                 {proceduresLoading ? (
                 <div className="text-center py-8">
-                    <div className="w-8 h-8 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin mx-auto"></div>
+                    <div className="w-8 h-8 border-4 border-t-transparent rounded-full animate-spin mx-auto" style={{ borderColor: 'rgba(var(--color-accentStart), 0.3)', borderTopColor: 'transparent' }}></div>
                 </div>
                 ) : procedures.length === 0 ? (
-                <div className="text-center py-12 text-slate-500">
-                    <MdEvent className="text-6xl text-slate-700 mx-auto mb-4" />
-                    <h3 className="text-xl font-semibold text-white mb-2">{t('procedures.list.empty')}</h3>
+                <div className="text-center py-12 text-theme-muted">
+                    <MdEvent className="text-6xl opacity-50 mx-auto mb-4" />
+                    <h3 className="text-xl font-semibold text-theme-primary mb-2">{t('procedures.list.empty')}</h3>
                     <p>{t('procedures.list.emptyDescription')}</p>
                 </div>
                 ) : (
@@ -307,14 +315,14 @@ const tabs = [
                       setSelectedProcedure(proc);
                       setIsViewModalOpen(true);
                     }}
-                    className="p-4 bg-slate-800/30 hover:bg-slate-800/50 rounded-xl border border-slate-700 transition-all cursor-pointer"
+                    className="p-4 bg-theme-tertiary hover:bg-opacity-80 rounded-xl border-theme border transition-all cursor-pointer"
                   >
                         <div className="flex items-start justify-between">
                         <div className="flex-1">
-                            <h4 className="font-semibold text-white mb-1">{proc.titre}</h4>
-                            <p className="text-sm text-slate-400 mb-2">{proc.type}</p>
+                            <h4 className="font-semibold text-theme-primary mb-1">{proc.titre}</h4>
+                            <p className="text-sm text-theme-secondary mb-2">{proc.type}</p>
                             {proc.date_evenement && (
-                            <div className="flex items-center space-x-2 text-sm text-slate-500">
+                            <div className="flex items-center space-x-2 text-sm text-theme-muted">
                                 <MdEvent />
                                 <span>{new Date(proc.date_evenement).toLocaleDateString('fr-FR', { 
                                 day: '2-digit', 
@@ -328,18 +336,18 @@ const tabs = [
                         </div>
                         <div className="flex items-center space-x-2">
                             <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                            proc.priorite === 'critical' ? 'bg-red-500/10 text-red-400 border border-red-500/30' :
-                            proc.priorite === 'high' ? 'bg-orange-500/10 text-orange-400 border border-orange-500/30' :
-                            proc.priorite === 'normal' ? 'bg-blue-500/10 text-blue-400 border border-blue-500/30' :
-                            'bg-slate-500/10 text-slate-400 border border-slate-500/30'
+                                proc.priorite === 'critical' ? 'badge-red' :
+                                proc.priorite === 'high' ? 'badge-orange' :
+                                proc.priorite === 'normal' ? 'badge-blue' :
+                                'badge-gray'
                             }`}>
                             {proc.priorite}
                             </span>
                             <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                            proc.statut === 'completed' ? 'bg-green-500/10 text-green-400 border border-green-500/30' :
-                            proc.statut === 'in_progress' ? 'bg-blue-500/10 text-blue-400 border border-blue-500/30' :
-                            proc.statut === 'cancelled' ? 'bg-red-500/10 text-red-400 border border-red-500/30' :
-                            'bg-yellow-500/10 text-yellow-400 border border-yellow-500/30'
+                                  proc.statut === 'completed' ? 'badge-green' :
+                                  proc.statut === 'in_progress' ? 'badge-blue' :
+                                  proc.statut === 'cancelled' ? 'badge-red' :
+                                  'badge-yellow'
                             }`}>
                             {proc.statut}
                             </span>
@@ -354,7 +362,7 @@ const tabs = [
            {activeTab === 'factures' && (
               <div className="space-y-4">
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-xl font-bold text-white">
+                  <h3 className="text-xl font-bold text-theme-primary">
                     {t('factures.title')} ({factures.length})
                   </h3>
                   <button
@@ -367,10 +375,10 @@ const tabs = [
                 </div>
 
                 {factures.length === 0 ? (
-                  <div className="text-center py-12 text-slate-500">
+                  <div className="text-center py-12 text-theme-muted">
                     <div className="text-6xl mb-4">💰</div>
-                    <h3 className="text-xl font-semibold text-white mb-2">Aucune facture</h3>
-                    <p>Créez une facture pour ce dossier</p>
+                    <h3 className="text-xl font-semibold text-theme-primary mb-2">{t('factures.empty')}</h3>
+                    <p>{t('factures.emptyDescription')}</p>
                   </div>
                 ) : (
                   <div className="space-y-3">
@@ -378,26 +386,26 @@ const tabs = [
                       <div
                         key={facture.id}
                         onClick={() => navigate(`/factures/${facture.id}`)}
-                        className="p-4 bg-slate-800/30 hover:bg-slate-800/50 rounded-xl border border-slate-700 transition-all cursor-pointer"
+                        className="p-4 bg-theme-tertiary hover:bg-opacity-80 rounded-xl border-theme border transition-all cursor-pointer"
                       >
                         <div className="flex items-center justify-between">
                           <div className="flex-1">
-                            <h4 className="font-semibold text-white mb-1">
+                            <h4 className="font-semibold text-theme-primary mb-1">
                               Facture {facture.numero}
                             </h4>
-                            <p className="text-sm text-slate-400">
+                            <p className="text-sm text-theme-secondary">
                               Émise le {new Date(facture.date_emission).toLocaleDateString('fr-FR')}
                             </p>
                           </div>
                           <div className="text-right">
-                            <div className="text-2xl font-bold text-white mb-1">
+                            <div className="text-2xl font-bold text-theme-primary mb-1">
                               {facture.montant_ttc.toFixed(2)} €
                             </div>
                             <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                              facture.statut === 'payee' ? 'bg-green-600 text-white' :
-                              facture.statut === 'envoyee' ? 'bg-blue-600 text-white' :
-                              facture.statut === 'en_retard' ? 'bg-red-600 text-white' :
-                              'bg-gray-600 text-white'
+                                facture.statut === 'payee' ? 'badge-green' :
+                                facture.statut === 'envoyee' ? 'badge-blue' :
+                                facture.statut === 'en_retard' ? 'badge-red' :
+                                'badge-gray'
                             }`}>
                               {t(`factures.statut.${facture.statut}`)}
                             </span>
@@ -412,7 +420,7 @@ const tabs = [
             {activeTab === 'notes' && (
               <div className="space-y-4">
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-xl font-bold text-white">
+                  <h3 className="text-xl font-bold text-theme-primary">
                     {t('notes.title')} ({notes.length})
                   </h3>
                   <button
@@ -429,9 +437,9 @@ const tabs = [
                 </div>
 
                 {notes.length === 0 ? (
-                  <div className="text-center py-12 text-slate-500">
-                    <MdNote className="text-6xl text-slate-700 mx-auto mb-4" />
-                    <h3 className="text-xl font-semibold text-white mb-2">{t('notes.empty')}</h3>
+                  <div className="text-center py-12 text-theme-muted">
+                    <MdNote className="text-6xl opacity-50 mx-auto mb-4" />
+                    <h3 className="text-xl font-semibold text-theme-primary mb-2">{t('notes.empty')}</h3>
                     <p>{t('notes.emptyDescription')}</p>
                   </div>
                 ) : (
@@ -439,12 +447,12 @@ const tabs = [
                     {notes.map((note) => (
                       <div
                         key={note.id}
-                        className="p-4 bg-slate-800/30 hover:bg-slate-800/50 rounded-xl border border-slate-700 transition-all"
+                        className="p-4 bg-theme-tertiary hover:bg-opacity-80 rounded-xl border-theme border transition-all"
                       >
                         <div className="flex items-start justify-between mb-2">
-                          <h4 className="font-semibold text-white">{note.titre}</h4>
+                          <h4 className="font-semibold text-theme-primary">{note.titre}</h4>
                           <div className="flex items-center space-x-2">
-                            <span className="text-xs text-slate-500">
+                            <span className="text-xs text-theme-muted">
                               {new Date(note.created_at).toLocaleDateString('fr-FR')}
                             </span>
                             <button
@@ -465,7 +473,7 @@ const tabs = [
                             </button>
                           </div>
                         </div>
-                        <p className="text-sm text-slate-400 line-clamp-2">{note.contenu}</p>
+                        <p className="text-sm text-theme-secondary line-clamp-2">{note.contenu}</p>
                       </div>
                     ))}
                   </div>
@@ -476,7 +484,7 @@ const tabs = [
           {activeTab === 'taches' && (
             <div className="space-y-4">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-xl font-bold text-white">
+                <h3 className="text-xl font-bold text-theme-primary">
                   {t('taches.title')} ({taches.length})
                 </h3>
                 <button
@@ -493,9 +501,9 @@ const tabs = [
               </div>
 
               {taches.length === 0 ? (
-                <div className="text-center py-12 text-slate-500">
-                  <MdCheckCircle className="text-6xl text-slate-700 mx-auto mb-4" />
-                  <h3 className="text-xl font-semibold text-white mb-2">{t('taches.empty')}</h3>
+                 <div className="text-center py-12 text-theme-muted">
+                  <MdCheckCircle className="text-6xl opacity-50 mx-auto mb-4" />
+                    <h3 className="text-xl font-semibold text-theme-primary mb-2">{t('taches.empty')}</h3>
                   <p>{t('taches.emptyDescription')}</p>
                 </div>
               ) : (
@@ -503,29 +511,29 @@ const tabs = [
                   {taches.map((tache) => (
                     <div
                       key={tache.id}
-                      className="p-4 bg-slate-800/30 hover:bg-slate-800/50 rounded-xl border border-slate-700 transition-all"
+                      className="p-4 bg-theme-tertiary hover:bg-opacity-80 rounded-xl border-theme border transition-all"
                     >
                       <div className="flex items-start justify-between mb-2">
                         <div className="flex-1">
-                          <h4 className="font-semibold text-white">{tache.titre}</h4>
+                          <h4 className="font-semibold text-theme-primary">{tache.titre}</h4>
                           {tache.description && (
-                            <p className="text-sm text-slate-400 mt-1 line-clamp-1">{tache.description}</p>
+                           <p className="text-sm text-theme-secondary mt-1 line-clamp-1">{tache.description}</p>
                           )}
                         </div>
                         <div className="flex items-center space-x-2">
                           <span className={`px-2 py-1 rounded text-xs font-medium ${
-                            tache.priorite === 'critical' ? 'bg-red-500/20 text-red-400' :
-                            tache.priorite === 'high' ? 'bg-orange-500/20 text-orange-400' :
-                            tache.priorite === 'normal' ? 'bg-blue-500/20 text-blue-400' :
-                            'bg-slate-500/20 text-slate-400'
+                              tache.priorite === 'critical' ? 'badge-red' :
+                              tache.priorite === 'high' ? 'badge-orange' :
+                              tache.priorite === 'normal' ? 'badge-blue' :
+                              'badge-gray'
                           }`}>
                             {t(`taches.priorite.${tache.priorite}`)}
                           </span>
                           <span className={`px-2 py-1 rounded text-xs font-medium ${
-                            tache.statut === 'completed' ? 'bg-green-500/20 text-green-400' :
-                            tache.statut === 'in_progress' ? 'bg-blue-500/20 text-blue-400' :
-                            tache.statut === 'cancelled' ? 'bg-red-500/20 text-red-400' :
-                            'bg-yellow-500/20 text-yellow-400'
+                              tache.statut === 'completed' ? 'badge-green' :
+                              tache.statut === 'in_progress' ? 'badge-blue' :
+                              tache.statut === 'cancelled' ? 'badge-red' :
+                              'badge-yellow'
                           }`}>
                             {t(`taches.statut.${tache.statut}`)}
                           </span>
@@ -548,7 +556,7 @@ const tabs = [
                         </div>
                       </div>
                       {tache.date_echeance && (
-                        <p className="text-xs text-slate-500">
+                        <p className="text-xs text-theme-muted">
                           Échéance: {new Date(tache.date_echeance).toLocaleDateString('fr-FR')}
                         </p>
                       )}
@@ -560,24 +568,8 @@ const tabs = [
           )}
 
             {activeTab === 'documents' && (
-              <div className="text-center py-12 text-slate-500">
-                <MdDescription className="text-6xl text-slate-700 mx-auto mb-4" />
-                <h3 className="text-xl font-semibold text-white mb-2">
-                  {t('common.module')} {t('dossiers.tabs.documents')}
-                </h3>
-                <p>Fonctionnalité à venir...</p>
-              </div>
-            )}
-            {/* Autres onglets (placeholder) */}
-            {activeTab !== 'infos' && activeTab !== 'procedures' && activeTab !== 'factures' && activeTab !== 'notes' && activeTab !== 'taches' && (
-            <div className="text-center py-12 text-slate-500">
-                <div className="text-6xl mb-4">{tabs.find(t => t.key === activeTab)?.icon}</div>
-                <h3 className="text-xl font-semibold text-white mb-2">
-                {t('common.module')} {tabs.find(t => t.key === activeTab)?.label}
-                </h3>
-                <p>Fonctionnalité à venir...</p>
-            </div>
-            )}
+                          <DossierDocumentsSection dossierId={id!} />
+            )}           
         </div>
       </div>
       {/* Modal Procédure */}
