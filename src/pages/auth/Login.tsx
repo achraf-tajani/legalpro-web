@@ -9,8 +9,8 @@ import ThemeSelector from '../../components/common/ThemeSelector';
 
 export default function Login() {
   const { t } = useTranslation();
-  const [email, setEmail] = useState('admin@legalpro.com');
-  const [password, setPassword] = useState('Test123!');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   
   const { login, isLoading, error, clearError, isAuthenticated } = useAuthStore();
   const navigate = useNavigate();
