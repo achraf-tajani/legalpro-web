@@ -114,16 +114,13 @@ export default function LanguageSwitcher({ variant = 'default' }: LanguageSwitch
                 }`}
                 style={isActive ? { borderLeftColor: `rgb(${currentTheme.colors.accentStart})` } : {}}
               >
-                <span className="text-2xl opacity-60">{lang.flag}</span>
-                <div className="flex-1 text-left">
-                  <p className={`text-sm font-medium ${currentTheme.classes.textPrimary}`}>{lang.name}</p>
-                  <p className={`text-xs ${currentTheme.classes.textMuted}`}>{lang.code.toUpperCase()}</p>
-                </div>
-                {isActive && (
-                  <svg className="w-5 h-5" style={{ color: `rgb(${currentTheme.colors.accentStart})` }} fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                  </svg>
-                )}
+                  <span className={`text-xl opacity-60 ${currentTheme.classes.textPrimary}`}>{lang.flag}</span>
+                  <span className={`text-sm font-medium ${currentTheme.classes.textPrimary}`}>{lang.name}</span>
+                  {isActive && (
+                    <svg className="w-4 h-4 ml-auto" style={{ color: `rgb(${currentTheme.colors.accentStart})` }} fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                    </svg>
+                  )}
               </button>
             );
           })}
