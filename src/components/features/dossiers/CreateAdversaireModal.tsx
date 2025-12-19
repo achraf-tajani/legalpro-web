@@ -22,7 +22,7 @@ export default function CreateAdversaireModal({
   adversaire,
   mode = 'create'
 }: CreateAdversaireModalProps) {
-  const { t, i18n } = useTranslation();
+  const { i18n } = useTranslation();
   const isRTL = i18n.language === 'ar';
 
   const [formData, setFormData] = useState({
