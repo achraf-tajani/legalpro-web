@@ -10,7 +10,7 @@ import CreateProcedureModal from '../../components/features/dossiers/CreateProce
 import { procedureService } from '../../services/procedure.service';
 import type { CreateProcedureDto } from '../../types/procedure.types';
 import type { CalendarEvent } from '../../types/calendar.types';
-import { MdAdd, MdFilterList, MdChevronLeft, MdChevronRight } from 'react-icons/md';
+import { MdAdd, MdChevronLeft, MdChevronRight } from 'react-icons/md';
 
 // Locales map
 const localesMap = {
@@ -114,12 +114,6 @@ export default function Calendrier() {
         </div>
         <div className="flex items-center space-x-3">
           <button 
-            className="flex items-center space-x-2 px-4 py-2 bg-theme-tertiary border border-theme hover:bg-opacity-80 text-theme-primary rounded-lg transition-all"
-          >
-            <MdFilterList />
-            <span>{t('calendar.filters')}</span>
-          </button>
-          <button 
             onClick={() => setIsProcedureModalOpen(true)}
             className="flex items-center space-x-2 px-4 py-3 bg-accent-gradient hover:bg-accent-gradient-hover text-white rounded-xl font-semibold shadow-lg transition-all"
           >
@@ -130,7 +124,7 @@ export default function Calendrier() {
       </div>
 
       {/* Calendar */}
-      <div className="bg-theme-surface border-theme border rounded-2xl overflow-hidden" style={{ height: 'calc(100vh - 250px)' }}>
+      <div className="bg-theme-surface border-theme border rounded-2xl overflow-y-auto" style={{ height: 'calc(100vh - 220px)' }}>
         <Calendar
           localizer={localizer}
           events={events}

@@ -17,7 +17,11 @@ import { tacheService } from '../../services/tache.service';
 import type { Tache, CreateTacheDto, UpdateTacheDto } from '../../types/tache.types';
 import CreateTacheModal from '../../components/features/taches/CreateTacheModal';
 import DossierDocumentsSection from '../../components/features/dossiers/DossierDocumentsSection';
-
+import { useAdversairesByDossier } from '../../hooks/useAdversaires';
+import { adversaireService } from '../../services/adversaire.service';
+import CreateAdversaireModal from '../../components/features/dossiers/CreateAdversaireModal';
+import type { Adversaire, CreateAdversaireDto, UpdateAdversaireDto } from '../../types/adversaire.types';
+import { MdPerson } from 'react-icons/md';
 import { 
   MdArrowBack, 
   MdEdit, 
@@ -50,6 +54,10 @@ export default function DossierDetail() {
   const { factures } = useFacturesByDossier(id!);
   const { notes } = useNotesByDossier(id);
   const { taches } = useTachesByDossier(id);
+  const { adversaires, refetch: refetchAdversaires } = useAdversairesByDossier(id);
+  const [isAdversaireModalOpen, setIsAdversaireModalOpen] = useState(false);
+  const [adversaireMode, setAdversaireMode] = useState<'create' | 'edit'>('create');
+  const [editingAdversaire, setEditingAdversaire] = useState<Adversaire | null>(null);
   const [isNoteModalOpen, setIsNoteModalOpen] = useState(false);
   const [noteMode, setNoteMode] = useState<'create' | 'edit'>('create');
   const [editingNote, setEditingNote] = useState<Note | null>(null);
@@ -57,6 +65,21 @@ export default function DossierDetail() {
   const [tacheMode, setTacheMode] = useState<'create' | 'edit'>('create');
   const [editingTache, setEditingTache] = useState<Tache | null>(null);
   
+  const handleCreateAdversaire = async (data: CreateAdversaireDto) => {
+    await adversaireService.create(data);
+    refetchAdversaires();
+  };
+
+  const handleUpdateAdversaire = async (id: string, data: UpdateAdversaireDto) => {
+    await adversaireService.update(id, data);
+    refetchAdversaires();
+  };
+
+  const handleDeleteAdversaire = async (id: string) => {
+    if (!window.confirm('Supprimer cet adversaire ?')) return;
+    await adversaireService.delete(id);
+    refetchAdversaires();
+  };
   const handleDeleteTache = async (id: string) => {
     if (!window.confirm(t('taches.confirmDelete'))) return;
     await tacheService.delete(id);
@@ -173,6 +196,8 @@ const tabs = [
   { key: 'documents', label: t('dossiers.tabs.documents'), icon: <MdDescription className="text-xl" />, count: documents.length },
   { key: 'factures', label: t('dossiers.tabs.factures'), icon: <MdAttachMoney className="text-xl" />, count: factures.length },
   { key: 'notes', label: t('dossiers.tabs.notes'), icon: <MdNote className="text-xl" />, count: notes.length },
+  { key: 'adversaires', label: 'Adversaires', icon: <MdPerson className="text-xl" />, count: adversaires.length },
+
 ];
 
   return (
@@ -568,8 +593,85 @@ const tabs = [
           )}
 
             {activeTab === 'documents' && (
-                          <DossierDocumentsSection dossierId={id!} />
-            )}           
+              <DossierDocumentsSection dossierId={id!} />
+            )}     
+
+            {activeTab === 'adversaires' && (
+              <div className="space-y-4">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-xl font-bold text-theme-primary">
+                    Adversaires ({adversaires.length})
+                  </h3>
+                  <button
+                    onClick={() => {
+                      setAdversaireMode('create');
+                      setEditingAdversaire(null);
+                      setIsAdversaireModalOpen(true);
+                    }}
+                    className="flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-red-500 to-rose-600 hover:from-red-600 hover:to-rose-700 text-white rounded-lg font-semibold transition-all"
+                  >
+                    <MdAdd />
+                    <span>Ajouter</span>
+                  </button>
+                </div>
+
+                {adversaires.length === 0 ? (
+                  <div className="text-center py-12 text-theme-muted">
+                    <MdPerson className="text-6xl opacity-50 mx-auto mb-4" />
+                    <h3 className="text-xl font-semibold text-theme-primary mb-2">Aucun adversaire</h3>
+                    <p>Ajoutez les parties adverses de ce dossier</p>
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    {adversaires.map((adversaire) => (
+                      <div
+                        key={adversaire.id}
+                        className="p-4 bg-theme-tertiary hover:bg-opacity-80 rounded-xl border-theme border transition-all"
+                      >
+                        <div className="flex items-start justify-between">
+                          <div className="flex items-start space-x-3">
+                            <div className="w-10 h-10 bg-red-500/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                              <MdPerson className="text-xl text-red-400" />
+                            </div>
+                            <div>
+                              <h4 className="font-semibold text-theme-primary">{adversaire.nom}</h4>
+                              <p className="text-sm text-theme-secondary">
+                                {adversaire.type_adversaire || 'Type non spécifié'}
+                                {adversaire.fonction && ` • ${adversaire.fonction}`}
+                              </p>
+                              {adversaire.avocat_adverse && (
+                                <p className="text-sm text-theme-muted mt-1">
+                                  Avocat: {adversaire.avocat_adverse}
+                                  {adversaire.cabinet && ` (${adversaire.cabinet})`}
+                                </p>
+                              )}
+                            </div>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <button
+                              onClick={() => {
+                                setEditingAdversaire(adversaire);
+                                setAdversaireMode('edit');
+                                setIsAdversaireModalOpen(true);
+                              }}
+                              className="text-blue-400 hover:text-blue-300"
+                            >
+                              <MdEdit />
+                            </button>
+                            <button
+                              onClick={() => handleDeleteAdversaire(adversaire.id)}
+                              className="text-red-400 hover:text-red-300"
+                            >
+                              <MdDelete />
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}      
         </div>
       </div>
       {/* Modal Procédure */}
@@ -654,6 +756,21 @@ const tabs = [
         tache={editingTache}
         mode={tacheMode}
       />
+
+      {/* Modal Adversaire */}
+        <CreateAdversaireModal
+          isOpen={isAdversaireModalOpen}
+          onClose={() => {
+            setIsAdversaireModalOpen(false);
+            setAdversaireMode('create');
+            setEditingAdversaire(null);
+          }}
+          onSubmit={handleCreateAdversaire}
+          onUpdate={handleUpdateAdversaire}
+          dossierId={id!}
+          adversaire={editingAdversaire}
+          mode={adversaireMode}
+        />
     </div>
   );
 }

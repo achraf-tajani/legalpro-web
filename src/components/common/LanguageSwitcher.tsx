@@ -53,7 +53,7 @@ export default function LanguageSwitcher({ variant = 'default' }: LanguageSwitch
         </button>
 
         {isOpen && (
-          <div className={`absolute top-full right-0 mt-2 w-48 ${currentTheme.classes.surface} ${currentTheme.classes.border} border rounded-xl shadow-2xl overflow-hidden z-50`}>
+          <div className={`absolute top-full right-0 mt-2 w-48 ${currentTheme.classes.bgPrimary} ${currentTheme.classes.border} border rounded-xl shadow-2xl overflow-hidden z-50`}>
             {languages.map((lang) => {
               const isActive = currentLanguage.code === lang.code;
               return (
@@ -66,7 +66,7 @@ export default function LanguageSwitcher({ variant = 'default' }: LanguageSwitch
                       : `${currentTheme.classes.bgTertiaryHover}`
                   }`}
                 >
-                  <span className="text-xl opacity-60">{lang.flag}</span>
+                  <span className={`text-xl opacity-60 ${currentTheme.classes.textPrimary}`}>{lang.flag}</span>
                   <span className={`text-sm font-medium ${currentTheme.classes.textPrimary}`}>{lang.name}</span>
                   {isActive && (
                     <svg className="w-4 h-4 ml-auto" style={{ color: `rgb(${currentTheme.colors.accentStart})` }} fill="currentColor" viewBox="0 0 20 20">
@@ -100,7 +100,7 @@ export default function LanguageSwitcher({ variant = 'default' }: LanguageSwitch
       </button>
 
       {isOpen && (
-        <div className={`absolute top-full right-0 mt-2 w-56 ${currentTheme.classes.surface} ${currentTheme.classes.border} border rounded-xl shadow-2xl overflow-hidden z-50`}>
+        <div className={`absolute top-full right-0 mt-2 w-56 ${currentTheme.classes.bgPrimary} ${currentTheme.classes.border} border rounded-xl shadow-2xl overflow-hidden z-50`}>
           {languages.map((lang) => {
             const isActive = currentLanguage.code === lang.code;
             return (

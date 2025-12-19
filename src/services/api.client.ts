@@ -37,7 +37,9 @@ class ApiClient {
       (response) => response,
       async (error) => {
         const originalRequest = error.config;
-
+        const isLoginRequest = originalRequest?.url?.includes(API_ENDPOINTS.AUTH.LOGIN);
+        if (isLoginRequest) 
+          return Promise.reject(error);
         // Si 401 et pas déjà retry
         if (error.response?.status === 401 && !originalRequest._retry) {
           if (this.isRefreshing) {

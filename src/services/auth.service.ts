@@ -62,6 +62,12 @@ class AuthService {
     localStorage.removeItem('refreshToken');
     localStorage.removeItem('user');
   }
+  async changePassword(oldPassword: string, newPassword: string): Promise<void> {
+    await apiClient.post(API_ENDPOINTS.UTILISATEURS.CHANGE_PASSWORD, {
+      oldPassword,
+      newPassword,
+    });
+  }
 }
 
 export const authService = new AuthService();

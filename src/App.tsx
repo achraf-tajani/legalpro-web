@@ -7,6 +7,7 @@ import DashboardLayout from './components/layouts/DashboardLayout';
 import FactureDetail from './components/features/factures/FactureDetail';
 import CreateFacture from './components/features/factures/CreateFacture';
 import { ThemeProvider, useTheme } from './contexts/ThemeContext';
+import { UpdatePrompt } from './components/UpdatePrompt';
 
 const Login = lazy(() => import('./pages/auth/Login'));
 const Dashboard = lazy(() => import('./pages/dashboard/Dashboard'));
@@ -76,6 +77,7 @@ function AppContent() {
 function App() {
   return (
     <ThemeProvider>
+      <UpdatePrompt />  
       <AppContent />
     </ThemeProvider>
   );

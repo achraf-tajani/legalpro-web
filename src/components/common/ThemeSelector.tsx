@@ -37,19 +37,17 @@ export default function ThemeSelector() {
 
       {/* Dropdown */}
       {isOpen && (
-        <div className="absolute top-full right-0 mt-2 w-48 bg-theme-surface border-theme border rounded-xl shadow-2xl overflow-hidden z-50">
-          <div className="p-2 space-y-1">
+        <div className={`absolute top-full right-0 mt-2 w-48  ${currentTheme.classes.bgPrimary} ${currentTheme.classes.border} border-theme border rounded-xl shadow-2xl overflow-hidden z-50`}>
             {Object.entries(availableThemes).map(([key, theme]) => {
               const isActive = themeName === key;
-              
               return (
                 <button
                   key={key}
                   onClick={() => handleThemeChange(key as ThemeName)}
-                  className={`w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg transition-all ${
+                  className={`w-full flex items-center space-x-3 px-4 py-3 transition-colors ${
                     isActive
-                      ? 'bg-theme-tertiary border border-accent-gradient'
-                      : 'hover:bg-theme-tertiary border border-transparent'
+                      ? `${currentTheme.classes.bgTertiary}` 
+                      : `${currentTheme.classes.bgTertiaryHover}`
                   }`}
                   style={isActive ? {
                     borderColor: `rgb(var(--color-accentStart))`
@@ -57,7 +55,6 @@ export default function ThemeSelector() {
                 >
                   {/* Icône du thème */}
                   <span className="text-2xl">{theme.icon}</span>
-                  
                   {/* Nom */}
                   <div className="flex-1 text-left">
                     <p className={`text-sm font-medium ${
@@ -66,7 +63,6 @@ export default function ThemeSelector() {
                       {theme.label}
                     </p>
                   </div>
-
                   {/* Indicateur actif */}
                   {isActive && (
                     <div className="w-2 h-2 rounded-full" style={{ backgroundColor: `rgb(var(--color-accentStart))` }}></div>
@@ -74,7 +70,6 @@ export default function ThemeSelector() {
                 </button>
               );
             })}
-          </div>
 
           {/* Footer info */}
           <div className="px-3 py-2 bg-theme-tertiary border-theme border-t">

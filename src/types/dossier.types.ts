@@ -32,6 +32,7 @@ export interface CreateDossierDto {
   tribunal?: string;
   reference?: string;
   confidentialite?: string;
+  avocat_assigne?: string;
   id_client?: string;
 }
 

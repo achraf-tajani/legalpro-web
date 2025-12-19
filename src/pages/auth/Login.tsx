@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../../stores/authStore';
 import { ROUTES } from '../../config/routes.config';
-import logoAvocat from '../../assets/images/icon_av.svg';
+import logoAvocat from '../../assets/images/legaPro.png';
 import { useTranslation } from 'react-i18next';
 import LanguageSwitcher from '../../components/common/LanguageSwitcher';
 import ThemeSelector from '../../components/common/ThemeSelector';

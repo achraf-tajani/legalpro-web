@@ -47,11 +47,11 @@
   }
   
   .bg-theme-tertiary {
-    background-color: rgba(var(--color-bgTertiary), 0.5);
+    background-color: rgba(var(--color-bgTertiary), 1);
   }
   
   .bg-theme-surface {
-    background-color: rgba(var(--color-surface), 0.5);
+    background-color: rgba(var(--color-surface), 1);
     backdrop-filter: blur(24px);
   }
   

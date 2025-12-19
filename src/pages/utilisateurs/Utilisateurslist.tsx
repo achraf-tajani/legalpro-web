@@ -1,10 +1,11 @@
 import { useState } from 'react';
-import { MdPersonAdd, MdEdit, MdBlock, MdCheckCircle, MdRefresh } from 'react-icons/md';
+import { MdPersonAdd, MdEdit, MdBlock, MdCheckCircle, MdRefresh, MdFolder } from 'react-icons/md';
 import type { Utilisateur } from '../../types/utilisateur.types';
 import { useUtilisateurs } from '../../hooks/useUtilisateurs';
 import { utilisateurService } from '../../services/utilisateur.service';
 import CreateAvocatModal from '../../components/features/utilisateurs/Createavocatmodal';
 import EditUtilisateurModal from '../../components/features/utilisateurs/Editutilisateurmodal';
+import AssignDossiersModal from '../../components/features/utilisateurs/AssignDossiersModal';
 
 export default function UtilisateursList() {
   const { utilisateurs, isLoading, refetch } = useUtilisateurs();
@@ -14,6 +15,7 @@ export default function UtilisateursList() {
   const [selectedUser, setSelectedUser] = useState<Utilisateur | null>(null);
   const [filterRole, setFilterRole] = useState('');
   const [filterStatus, setFilterStatus] = useState('');
+  const [isAssignModalOpen, setIsAssignModalOpen] = useState(false);
 
   const getRoleBadgeClass = (role?: string) => {
     switch (role) {
@@ -136,6 +138,7 @@ export default function UtilisateursList() {
                     <th className="px-4 py-3 text-left text-xs font-semibold text-theme-secondary uppercase">Nom</th>
                     <th className="px-4 py-3 text-left text-xs font-semibold text-theme-secondary uppercase">Email</th>
                     <th className="px-4 py-3 text-left text-xs font-semibold text-theme-secondary uppercase">Rôle</th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-theme-secondary uppercase hidden lg:table-cell">Dossiers</th>
                     <th className="px-4 py-3 text-left text-xs font-semibold text-theme-secondary uppercase hidden sm:table-cell">Statut</th>
                     <th className="px-4 py-3 text-left text-xs font-semibold text-theme-secondary uppercase hidden md:table-cell">Créé le</th>
                     <th className="px-4 py-3 text-right text-xs font-semibold text-theme-secondary uppercase">Actions</th>
@@ -164,6 +167,20 @@ export default function UtilisateursList() {
                         <span className={`px-2 py-1 rounded-full text-xs font-medium ${getRoleBadgeClass(user.type_utilisateur)}`}>
                           {user.type_utilisateur}
                         </span>
+                      </td>
+                      <td className="px-4 py-3 hidden lg:table-cell">
+                        {user.type_utilisateur === 'AVOCAT' && (
+                          <button
+                            onClick={() => {
+                              setSelectedUser(user);
+                              setIsAssignModalOpen(true);
+                            }}
+                            className="px-3 py-1 bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 rounded-lg text-sm transition-all flex items-center space-x-1"
+                          >
+                            <MdFolder className="text-sm" />
+                            <span>Gérer</span>
+                          </button>
+                        )}
                       </td>
                       <td className="px-4 py-3 hidden sm:table-cell">
                         <span className={`px-2 py-1 rounded-full text-xs font-medium ${user.est_actif ? 'badge-green' : 'badge-gray'}`}>
@@ -226,6 +243,18 @@ export default function UtilisateursList() {
           isOpen={isEditModalOpen}
           onClose={() => {
             setIsEditModalOpen(false);
+            setSelectedUser(null);
+          }}
+          utilisateur={selectedUser}
+          onSuccess={refetch}
+        />
+      )}
+
+      {selectedUser && selectedUser.type_utilisateur === 'AVOCAT' && (
+        <AssignDossiersModal
+          isOpen={isAssignModalOpen}
+          onClose={() => {
+            setIsAssignModalOpen(false);
             setSelectedUser(null);
           }}
           utilisateur={selectedUser}

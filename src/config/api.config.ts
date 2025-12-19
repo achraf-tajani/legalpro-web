@@ -54,4 +54,12 @@ export const API_ENDPOINTS = {
     UNREAD: '/alertes/non-lues',
     COUNT_UNREAD: '/alertes/count-non-lues',
   },
+  UTILISATEURS: {
+    CHANGE_PASSWORD: '/utilisateurs/change-password',
+  },
+  ADVERSAIRES: {
+    LIST: '/adversaires',
+    BY_ID: (id: string) => `/adversaires/${id}`,
+    BY_DOSSIER: (dossierId: string) => `/adversaires/dossier/${dossierId}`,
+  },
 } as const;

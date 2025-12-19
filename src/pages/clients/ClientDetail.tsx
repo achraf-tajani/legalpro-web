@@ -5,7 +5,8 @@ import { clientService } from '../../services/client.service';
 import CreateClientModal from '../../components/features/clients/CreateClientModal';
 import type { Client, UpdateClientDto } from '../../types/client.types';
 import { useDossiersByClient } from '../../hooks/useDossiersByClient';
-import { MdFolder } from 'react-icons/md';
+import { useAuthStore } from '../../stores/authStore';
+import { MdFolder, MdLock } from 'react-icons/md';
 
 import { 
   MdArrowBack, 
@@ -22,12 +23,21 @@ export default function ClientDetail() {
   const { id } = useParams<{ id: string }>();
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const { user } = useAuthStore();
   
   const [client, setClient] = useState<Client | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { dossiers, isLoading: dossierLoading } = useDossiersByClient(id);
+
+  // Vérifier si l'utilisateur a accès au dossier
+  const hasAccessToDossier = (dossier: any) => {
+    if (user?.type_utilisateur === 'ADMIN') return true;
+    if (user?.type_utilisateur === 'AVOCAT' && dossier.avocat_assigne === user.avocatId) return true;
+    return false;
+  };
+
   useEffect(() => {
     const fetchClient = async () => {
       if (!id) return;
@@ -259,33 +269,60 @@ export default function ClientDetail() {
           </div>
         ) : (
           <div className="space-y-3">
-            {dossiers.map((dossier) => (
-              <div
-                key={dossier.id}
-                onClick={() => navigate(`/dossiers/${dossier.id}`)}
-               className="flex items-center justify-between p-4 bg-theme-tertiary hover:bg-opacity-80 rounded-xl transition-all cursor-pointer border-theme border hover:border-opacity-80"
-              >
-                <div className="flex items-center space-x-3">
-                  <div className="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-lg flex items-center justify-center">
-                    <MdFolder className="text-xl text-white" />
+            {dossiers.map((dossier) => {
+              const hasAccess = hasAccessToDossier(dossier);
+              
+              return (
+                <div
+                  key={dossier.id}
+                  onClick={() => hasAccess && navigate(`/dossiers/${dossier.id}`)}
+                  className={`flex items-center justify-between p-4 rounded-xl transition-all border-theme border ${
+                    hasAccess 
+                      ? 'bg-theme-tertiary hover:bg-opacity-80 cursor-pointer hover:border-opacity-80' 
+                      : 'bg-gray-500/10 cursor-not-allowed opacity-60'
+                  }`}
+                >
+                  <div className="flex items-center space-x-3">
+                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
+                      hasAccess 
+                        ? 'bg-gradient-to-br from-indigo-500 to-purple-600' 
+                        : 'bg-gray-500/20'
+                    }`}>
+                      {hasAccess ? (
+                        <MdFolder className="text-xl text-white" />
+                      ) : (
+                        <MdLock className="text-xl text-gray-400" />
+                      )}
+                    </div>
+                    <div>
+                      <h4 className="text-theme-primary font-semibold">
+                        {hasAccess ? dossier.titre : 'Accès restreint'}
+                      </h4>
+                      <p className="text-sm text-theme-secondary">
+                        {hasAccess ? dossier.type : 'Vous n\'êtes pas assigné à ce dossier'}
+                      </p>
+                    </div>
                   </div>
-                  <div>
-                    <h4 className="text-theme-primary font-semibold">{dossier.titre}</h4>
-                     <p className="text-sm text-theme-secondary">{dossier.type}</p>
+                  <div className="flex items-center space-x-2">
+                    {hasAccess ? (
+                      <span className={`px-3 py-1 rounded-full text-xs font-medium border ${
+                        dossier.statut === 'en_cours' ? 'badge-blue' :
+                        dossier.statut === 'ouvert' ? 'badge-green' :
+                        dossier.statut === 'clos' ? 'badge-gray' :
+                        'badge-yellow'
+                      }`}>
+                        {dossier.statut.replace('_', ' ')}
+                      </span>
+                    ) : (
+                      <span className="px-3 py-1 rounded-full text-xs font-medium border badge-gray">
+                        <MdLock className="inline mr-1" />
+                        Restreint
+                      </span>
+                    )}
                   </div>
                 </div>
-                <div className="flex items-center space-x-2">
-                  <span className={`px-3 py-1 rounded-full text-xs font-medium border ${
-                    dossier.statut === 'en_cours' ? 'badge-blue' :
-                    dossier.statut === 'ouvert' ? 'badge-green' :
-                    dossier.statut === 'clos' ? 'badge-gray' :
-                    'badge-yellow'
-                  }`}>
-                    {dossier.statut.replace('_', ' ')}
-                  </span>
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
       </div>
