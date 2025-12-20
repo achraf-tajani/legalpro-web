@@ -22,6 +22,7 @@ import { adversaireService } from '../../services/adversaire.service';
 import CreateAdversaireModal from '../../components/features/dossiers/CreateAdversaireModal';
 import type { Adversaire, CreateAdversaireDto, UpdateAdversaireDto } from '../../types/adversaire.types';
 import { MdPerson } from 'react-icons/md';
+import ViewAdversaireModal from '../../components/features/dossiers/ViewAdversaireModal';
 import { 
   MdArrowBack, 
   MdEdit, 
@@ -64,7 +65,8 @@ export default function DossierDetail() {
   const [isTacheModalOpen, setIsTacheModalOpen] = useState(false);
   const [tacheMode, setTacheMode] = useState<'create' | 'edit'>('create');
   const [editingTache, setEditingTache] = useState<Tache | null>(null);
-  
+  const [selectedAdversaire, setSelectedAdversaire] = useState<Adversaire | null>(null);
+  const [isViewAdversaireModalOpen, setIsViewAdversaireModalOpen] = useState(false);
   const handleCreateAdversaire = async (data: CreateAdversaireDto) => {
     await adversaireService.create(data);
     refetchAdversaires();
@@ -241,69 +243,69 @@ const tabs = [
       </div>
         {/* Tabs */}
         <div className="bg-theme-surface border-theme border rounded-2xl overflow-hidden">
-          <div className="border-theme border-b flex overflow-x-auto scrollbar-hide">
+          <div className="border-theme border-b flex overflow-x-auto" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
             {tabs.map((tab) => (
-              <button
-                key={tab.key}
-                onClick={() => setActiveTab(tab.key)}
-                className={`cursor-pointer flex items-center space-x-2 px-4 sm:px-6 py-3 sm:py-4 font-medium transition-all whitespace-nowrap border-b-2 text-sm sm:text-base ${
-                  activeTab === tab.key
-                    ? 'border-accent-start text-theme-primary bg-theme-tertiary'
-                    : 'border-transparent text-theme-muted hover:text-theme-primary hover:bg-theme-tertiary hover:bg-opacity-30'
-                }`}
-                style={activeTab === tab.key ? { borderBottomColor: `rgb(var(--color-accentStart))` } : undefined}
-              >
-                <span className="text-lg sm:text-xl">{tab.icon}</span>
-                <span className="hidden sm:inline">{tab.label}</span>
-                {tab.count !== undefined && tab.count > 0 && (
-                  <span className="px-2 py-0.5 rounded-full text-xs" style={{ 
-                    backgroundColor: `rgba(var(--color-accentStart), 0.2)`,
-                    color: `rgb(var(--color-accentStart))`
-                  }}>
-                    {tab.count}
-                  </span>
-                )}
-              </button>
+                <button
+                        key={tab.key}
+                        onClick={() => setActiveTab(tab.key)}
+                        className={`cursor-pointer flex items-center space-x-1 sm:space-x-2 px-3 sm:px-6 py-3 sm:py-4 font-medium transition-all whitespace-nowrap border-b-2 text-sm sm:text-base flex-shrink-0 ${
+                          activeTab === tab.key
+                            ? 'border-accent-start text-theme-primary bg-theme-tertiary'
+                            : 'border-transparent text-theme-muted hover:text-theme-primary hover:bg-theme-tertiary hover:bg-opacity-30'
+                        }`}
+                        style={activeTab === tab.key ? { borderBottomColor: `rgb(var(--color-accentStart))` } : undefined}
+                      >
+                        <span className="text-lg sm:text-xl">{tab.icon}</span>
+                        <span className="hidden md:inline">{tab.label}</span>
+                        {tab.count !== undefined && tab.count > 0 && (
+                          <span className="px-1.5 sm:px-2 py-0.5 rounded-full text-xs" style={{ 
+                            backgroundColor: `rgba(var(--color-accentStart), 0.2)`,
+                            color: `rgb(var(--color-accentStart))`
+                          }}>
+                            {tab.count}
+                          </span>
+                        )}
+                      </button>
             ))}
-        </div>
+          </div>
 
-        {/* Content */}
-        <div className="p-4 sm:p-6">
-          {/* Onglet Infos */}
-          {activeTab === 'infos' && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-              <div>
-                <label className="block text-sm font-semibold text-theme-secondary mb-1">{t('dossiers.detail.type')}</label>
-                <p className="text-theme-primary">{dossier.type}</p>
+          {/* Content */}
+          <div className="p-4 sm:p-6">
+            {/* Onglet Infos */}
+            {activeTab === 'infos' && (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+                <div>
+                  <label className="block text-sm font-semibold text-theme-secondary mb-1">{t('dossiers.detail.type')}</label>
+                  <p className="text-theme-primary">{dossier.type}</p>
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-theme-secondary mb-1">{t('dossiers.detail.statut')}</label>
+                  <p className="text-theme-primary">{dossier.statut.replace('_', ' ')}</p>
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-theme-secondary mb-1">{t('dossiers.detail.priorite')}</label>
+                  <p className="text-theme-primary capitalize">{dossier.priorite}</p>
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-theme-secondary mb-1">{t('dossiers.detail.domaine')}</label>
+                  <p className="text-theme-primary">{dossier.domaine || t('dossiers.detail.notSpecified')}</p>
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-theme-secondary mb-1">{t('dossiers.detail.tribunal')}</label>
+                  <p className="text-theme-primary">{dossier.tribunal || t('dossiers.detail.notSpecified')}</p>
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-theme-secondary mb-1">{t('dossiers.detail.montant')}</label>
+                  <p className="text-theme-primary">
+                    {dossier.montant_en_jeu ? `${dossier.montant_en_jeu.toLocaleString()} €` : t('dossiers.detail.notSpecified')}
+                  </p>
+                </div>
+                <div className="sm:col-span-2">
+                  <label className="block text-sm font-semibold text-theme-secondary mb-1">{t('dossiers.detail.description')}</label>
+                  <p className="text-theme-primary">{dossier.description || t('dossiers.detail.noDescription')}</p>
+                </div>
               </div>
-              <div>
-                <label className="block text-sm font-semibold text-theme-secondary mb-1">{t('dossiers.detail.statut')}</label>
-                <p className="text-theme-primary">{dossier.statut.replace('_', ' ')}</p>
-              </div>
-              <div>
-                <label className="block text-sm font-semibold text-theme-secondary mb-1">{t('dossiers.detail.priorite')}</label>
-                <p className="text-theme-primary capitalize">{dossier.priorite}</p>
-              </div>
-              <div>
-                <label className="block text-sm font-semibold text-theme-secondary mb-1">{t('dossiers.detail.domaine')}</label>
-                <p className="text-theme-primary">{dossier.domaine || t('dossiers.detail.notSpecified')}</p>
-              </div>
-              <div>
-                <label className="block text-sm font-semibold text-theme-secondary mb-1">{t('dossiers.detail.tribunal')}</label>
-                <p className="text-theme-primary">{dossier.tribunal || t('dossiers.detail.notSpecified')}</p>
-              </div>
-              <div>
-                <label className="block text-sm font-semibold text-theme-secondary mb-1">{t('dossiers.detail.montant')}</label>
-                <p className="text-theme-primary">
-                  {dossier.montant_en_jeu ? `${dossier.montant_en_jeu.toLocaleString()} €` : t('dossiers.detail.notSpecified')}
-                </p>
-              </div>
-              <div className="sm:col-span-2">
-                <label className="block text-sm font-semibold text-theme-secondary mb-1">{t('dossiers.detail.description')}</label>
-                <p className="text-theme-primary">{dossier.description || t('dossiers.detail.noDescription')}</p>
-              </div>
-            </div>
-          )}
+            )}
 
             {/* Onglet Procédures */}
             {activeTab === 'procedures' && (
@@ -506,91 +508,91 @@ const tabs = [
               </div>
             )}
 
-          {activeTab === 'taches' && (
-            <div className="space-y-4">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-xl font-bold text-theme-primary">
-                  {t('taches.title')} ({taches.length})
-                </h3>
-                <button
-                  onClick={() => {
-                    setTacheMode('create');
-                    setEditingTache(null);
-                    setIsTacheModalOpen(true);
-                  }}
-                  className="flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-cyan-600 hover:from-blue-600 hover:to-cyan-700 text-white rounded-lg font-semibold transition-all"
-                >
-                  <MdAdd />
-                  <span>{t('taches.new')}</span>
-                </button>
-              </div>
+            {activeTab === 'taches' && (
+              <div className="space-y-4">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-xl font-bold text-theme-primary">
+                    {t('taches.title')} ({taches.length})
+                  </h3>
+                  <button
+                    onClick={() => {
+                      setTacheMode('create');
+                      setEditingTache(null);
+                      setIsTacheModalOpen(true);
+                    }}
+                    className="flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-cyan-600 hover:from-blue-600 hover:to-cyan-700 text-white rounded-lg font-semibold transition-all"
+                  >
+                    <MdAdd />
+                    <span>{t('taches.new')}</span>
+                  </button>
+                </div>
 
-              {taches.length === 0 ? (
-                 <div className="text-center py-12 text-theme-muted">
-                  <MdCheckCircle className="text-6xl opacity-50 mx-auto mb-4" />
-                    <h3 className="text-xl font-semibold text-theme-primary mb-2">{t('taches.empty')}</h3>
-                  <p>{t('taches.emptyDescription')}</p>
-                </div>
-              ) : (
-                <div className="space-y-3">
-                  {taches.map((tache) => (
-                    <div
-                      key={tache.id}
-                      className="p-4 bg-theme-tertiary hover:bg-opacity-80 rounded-xl border-theme border transition-all"
-                    >
-                      <div className="flex items-start justify-between mb-2">
-                        <div className="flex-1">
-                          <h4 className="font-semibold text-theme-primary">{tache.titre}</h4>
-                          {tache.description && (
-                           <p className="text-sm text-theme-secondary mt-1 line-clamp-1">{tache.description}</p>
-                          )}
+                {taches.length === 0 ? (
+                  <div className="text-center py-12 text-theme-muted">
+                    <MdCheckCircle className="text-6xl opacity-50 mx-auto mb-4" />
+                      <h3 className="text-xl font-semibold text-theme-primary mb-2">{t('taches.empty')}</h3>
+                    <p>{t('taches.emptyDescription')}</p>
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    {taches.map((tache) => (
+                      <div
+                        key={tache.id}
+                        className="p-4 bg-theme-tertiary hover:bg-opacity-80 rounded-xl border-theme border transition-all"
+                      >
+                        <div className="flex items-start justify-between mb-2">
+                          <div className="flex-1">
+                            <h4 className="font-semibold text-theme-primary">{tache.titre}</h4>
+                            {tache.description && (
+                            <p className="text-sm text-theme-secondary mt-1 line-clamp-1">{tache.description}</p>
+                            )}
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <span className={`px-2 py-1 rounded text-xs font-medium ${
+                                tache.priorite === 'critical' ? 'badge-red' :
+                                tache.priorite === 'high' ? 'badge-orange' :
+                                tache.priorite === 'normal' ? 'badge-blue' :
+                                'badge-gray'
+                            }`}>
+                              {t(`taches.priorite.${tache.priorite}`)}
+                            </span>
+                            <span className={`px-2 py-1 rounded text-xs font-medium ${
+                                tache.statut === 'completed' ? 'badge-green' :
+                                tache.statut === 'in_progress' ? 'badge-blue' :
+                                tache.statut === 'cancelled' ? 'badge-red' :
+                                'badge-yellow'
+                            }`}>
+                              {t(`taches.statut.${tache.statut}`)}
+                            </span>
+                            <button
+                              onClick={() => {
+                                setEditingTache(tache);
+                                setTacheMode('edit');
+                                setIsTacheModalOpen(true);
+                              }}
+                              className="text-blue-400 hover:text-blue-300"
+                            >
+                              <MdEdit />
+                            </button>
+                            <button
+                              onClick={() => handleDeleteTache(tache.id)}
+                              className="text-red-400 hover:text-red-300"
+                            >
+                              <MdDelete />
+                            </button>
+                          </div>
                         </div>
-                        <div className="flex items-center space-x-2">
-                          <span className={`px-2 py-1 rounded text-xs font-medium ${
-                              tache.priorite === 'critical' ? 'badge-red' :
-                              tache.priorite === 'high' ? 'badge-orange' :
-                              tache.priorite === 'normal' ? 'badge-blue' :
-                              'badge-gray'
-                          }`}>
-                            {t(`taches.priorite.${tache.priorite}`)}
-                          </span>
-                          <span className={`px-2 py-1 rounded text-xs font-medium ${
-                              tache.statut === 'completed' ? 'badge-green' :
-                              tache.statut === 'in_progress' ? 'badge-blue' :
-                              tache.statut === 'cancelled' ? 'badge-red' :
-                              'badge-yellow'
-                          }`}>
-                            {t(`taches.statut.${tache.statut}`)}
-                          </span>
-                          <button
-                            onClick={() => {
-                              setEditingTache(tache);
-                              setTacheMode('edit');
-                              setIsTacheModalOpen(true);
-                            }}
-                            className="text-blue-400 hover:text-blue-300"
-                          >
-                            <MdEdit />
-                          </button>
-                          <button
-                            onClick={() => handleDeleteTache(tache.id)}
-                            className="text-red-400 hover:text-red-300"
-                          >
-                            <MdDelete />
-                          </button>
-                        </div>
+                        {tache.date_echeance && (
+                          <p className="text-xs text-theme-muted">
+                            Échéance: {new Date(tache.date_echeance).toLocaleDateString('fr-FR')}
+                          </p>
+                        )}
                       </div>
-                      {tache.date_echeance && (
-                        <p className="text-xs text-theme-muted">
-                          Échéance: {new Date(tache.date_echeance).toLocaleDateString('fr-FR')}
-                        </p>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          )}
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
 
             {activeTab === 'documents' && (
               <DossierDocumentsSection dossierId={id!} />
@@ -626,7 +628,11 @@ const tabs = [
                     {adversaires.map((adversaire) => (
                       <div
                         key={adversaire.id}
-                        className="p-4 bg-theme-tertiary hover:bg-opacity-80 rounded-xl border-theme border transition-all"
+                        onClick={() => {
+                          setSelectedAdversaire(adversaire);
+                          setIsViewAdversaireModalOpen(true);
+                        }}
+                        className="p-4 bg-theme-tertiary hover:bg-opacity-80 rounded-xl border-theme border transition-all cursor-pointer"
                       >
                         <div className="flex items-start justify-between">
                           <div className="flex items-start space-x-3">
@@ -646,24 +652,6 @@ const tabs = [
                                 </p>
                               )}
                             </div>
-                          </div>
-                          <div className="flex items-center space-x-2">
-                            <button
-                              onClick={() => {
-                                setEditingAdversaire(adversaire);
-                                setAdversaireMode('edit');
-                                setIsAdversaireModalOpen(true);
-                              }}
-                              className="text-blue-400 hover:text-blue-300"
-                            >
-                              <MdEdit />
-                            </button>
-                            <button
-                              onClick={() => handleDeleteAdversaire(adversaire.id)}
-                              className="text-red-400 hover:text-red-300"
-                            >
-                              <MdDelete />
-                            </button>
                           </div>
                         </div>
                       </div>
@@ -770,6 +758,26 @@ const tabs = [
           dossierId={id!}
           adversaire={editingAdversaire}
           mode={adversaireMode}
+        />
+
+        {/* Modal View Adversaire */}
+        <ViewAdversaireModal
+          isOpen={isViewAdversaireModalOpen}
+          onClose={() => {
+            setIsViewAdversaireModalOpen(false);
+            setSelectedAdversaire(null);
+          }}
+          adversaire={selectedAdversaire}
+          onEdit={(adv) => {
+            setIsViewAdversaireModalOpen(false);
+            setEditingAdversaire(adv);
+            setAdversaireMode('edit');
+            setIsAdversaireModalOpen(true);
+          }}
+          onDelete={(id) => {
+            setIsViewAdversaireModalOpen(false);
+            handleDeleteAdversaire(id);
+          }}
         />
     </div>
   );

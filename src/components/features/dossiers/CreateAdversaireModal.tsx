@@ -79,13 +79,24 @@ export default function CreateAdversaireModal({
 
     try {
       setIsSaving(true);
-
+      const cleanedData = {
+        nom: formData.nom,
+        type_adversaire: formData.type_adversaire || null,
+        email: formData.email || null,
+        telephone: formData.telephone || null,
+        avocat_adverse: formData.avocat_adverse || null,
+        cabinet: formData.cabinet || null,
+        fonction: formData.fonction || null,
+        adresse: formData.adresse || null,
+        strategie_known: formData.strategie_known || null,
+      };
+      console.log(cleanedData)
       if (mode === 'edit' && adversaire && onUpdate) {
-        await onUpdate(adversaire.id, formData);
+        await onUpdate(adversaire.id, cleanedData);
       } else {
         await onSubmit({
           id_dossier: dossierId,
-          ...formData,
+          ...cleanedData,
         });
       }
 
@@ -97,7 +108,6 @@ export default function CreateAdversaireModal({
       setIsSaving(false);
     }
   };
-
   if (!isOpen) return null;
 
   return (

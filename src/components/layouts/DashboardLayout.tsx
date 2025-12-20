@@ -8,7 +8,7 @@ import LanguageSwitcher from '../common/LanguageSwitcher';
 import { useTranslation } from 'react-i18next';
 import ThemeSelector from '../common/ThemeSelector';
 
-import { MdDashboard, MdFolder, MdPeople, MdCheckCircle, MdAttachMoney, MdDescription, MdCalendarToday, MdLogout, MdClose } from 'react-icons/md';
+import { MdDashboard, MdFolder, MdPeople, MdCheckCircle, MdAttachMoney, MdDescription, MdCalendarToday, MdLogout, MdClose, MdRefresh } from 'react-icons/md';
 import AvatarDropdown from '../AvatarDropdown';
 import PasswordModal from '../PasswordModal';
 
@@ -178,6 +178,16 @@ export default function DashboardLayout() {
             </button>
 
             <div className="flex items-center space-x-2 sm:space-x-4">
+                {/* Bouton Refresh - visible uniquement en PWA */}
+                  {window.matchMedia('(display-mode: standalone)').matches && (
+                    <button
+                      onClick={() => window.location.reload()}
+                      className="p-2 rounded-lg transition-colors text-theme-muted hover:text-theme-primary hover:bg-theme-tertiary"
+                      title="Actualiser"
+                    >
+                      <MdRefresh className="text-xl" />
+                    </button>
+                  )}
               <ThemeSelector />
               <LanguageSwitcher variant="minimal" />
               <AvatarDropdown onChangePassword={() => setShowPasswordModal(true)} />

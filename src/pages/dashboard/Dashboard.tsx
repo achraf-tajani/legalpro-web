@@ -170,59 +170,98 @@ export default function Dashboard() {
         <div className="bg-theme-surface border-theme border rounded-2xl p-4 sm:p-6">
           <h3 className="text-lg sm:text-xl font-bold text-theme-primary mb-4 sm:mb-6">{t('dashboard.upcomingDeadlines')}</h3>
           
-          {(() => {
-            const prochaines = procedures
-              .filter(p => p.date_evenement && new Date(p.date_evenement) > new Date())
-              .sort((a, b) => new Date(a.date_evenement!).getTime() - new Date(b.date_evenement!).getTime())
-              .slice(0, 5);
+         {(() => {
+              const now = new Date();
+              const prochaines = procedures
+                .filter(p => {
+                  const dateEvenement = p.date_evenement ? new Date(p.date_evenement) : null;
+                  const deadline = p.deadline ? new Date(p.deadline) : null;
+                  const keep = (dateEvenement && dateEvenement > now) || (deadline && deadline > now);
+                  return keep;
+                })
+               .map(p => {
+                const dateEvenement = p.date_evenement ? new Date(p.date_evenement) : null;
+                const deadline = p.deadline ? new Date(p.deadline) : null;
+                
+                let displayDate: Date;
+                let isDeadline = false;
+                
+                if (dateEvenement && deadline) {
+                  // Prendre la date FUTURE la plus proche
+                  if (dateEvenement > now && deadline > now) {
+                    // Les deux sont dans le futur, prendre la plus proche
+                    displayDate = dateEvenement < deadline ? dateEvenement : deadline;
+                    isDeadline = deadline <= dateEvenement;
+                  } else if (deadline > now) {
+                    displayDate = deadline;
+                    isDeadline = true;
+                  } else {
+                    displayDate = dateEvenement;
+                  }
+                } else if (deadline) {
+                  displayDate = deadline;
+                  isDeadline = true;
+                } else {
+                  displayDate = dateEvenement!;
+                }
+                
+                console.log('mapped:', p.titre, 'displayDate:', displayDate, 'isDeadline:', isDeadline);
+                return { ...p, displayDate, isDeadline };
+              })
+                .filter(p => p.displayDate > now)
+                .sort((a, b) => a.displayDate.getTime() - b.displayDate.getTime())
+                .slice(0, 5);
 
-            return prochaines.length === 0 ? (
-              <div className="text-center py-8 sm:py-12 text-theme-muted text-sm sm:text-base">
-                Aucune échéance prochaine
-              </div>
-            ) : (
-              <div className="space-y-2 sm:space-y-3 max-h-[400px] sm:max-h-[500px] overflow-y-auto">
-                {prochaines.map(procedure => {
-                  const dossier = dossiers.find(d => d.id === procedure.id_dossier);
-                  const daysUntil = Math.ceil((new Date(procedure.date_evenement!).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24));
-                  
-                  return (
-                    <div
-                      key={procedure.id}
-                      onClick={() => navigate(`/dossiers/${procedure.id_dossier}`)}
-                      className="p-3 sm:p-4 bg-theme-tertiary hover:bg-opacity-80 rounded-xl border-theme border hover:border-opacity-80 transition-all cursor-pointer"
-                    >
-                      <div className="flex items-start justify-between mb-2 gap-2">
-                        <div className="flex-1 min-w-0">
-                          <h4 className="font-semibold text-theme-primary mb-1 text-sm sm:text-base truncate">{procedure.titre}</h4>
-                          <p className="text-xs sm:text-sm text-theme-secondary truncate">{dossier?.titre || 'Dossier inconnu'}</p>
+              return prochaines.length === 0 ? (
+                <div className="text-center py-8 sm:py-12 text-theme-muted text-sm sm:text-base">
+                  Aucune échéance prochaine
+                </div>
+              ) : (
+                <div className="space-y-2 sm:space-y-3 max-h-[400px] sm:max-h-[500px] overflow-y-auto">
+                  {prochaines.map(procedure => {
+                    const dossier = dossiers.find(d => d.id === procedure.id_dossier);
+                    const daysUntil = Math.ceil((procedure.displayDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+                    
+                    return (
+                      <div
+                        key={procedure.id}
+                        onClick={() => navigate(`/dossiers/${procedure.id_dossier}`)}
+                        className="p-3 sm:p-4 bg-theme-tertiary hover:bg-opacity-80 rounded-xl border-theme border hover:border-opacity-80 transition-all cursor-pointer"
+                      >
+                        <div className="flex items-start justify-between mb-2 gap-2">
+                          <div className="flex-1 min-w-0">
+                            <h4 className="font-semibold text-theme-primary mb-1 text-sm sm:text-base truncate">
+                              {procedure.isDeadline ? '⏰ ' : ''}{procedure.titre}
+                            </h4>
+                            <p className="text-xs sm:text-sm text-theme-secondary truncate">{dossier?.titre || 'Dossier inconnu'}</p>
+                          </div>
+                          <span className={`px-2 sm:px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap ${
+                            daysUntil <= 3 ? 'badge-red' :
+                            daysUntil <= 7 ? 'badge-orange' :
+                            'badge-blue'
+                          }`}>
+                            {daysUntil === 0 ? "Aujourd'hui" :
+                            daysUntil === 1 ? 'Demain' :
+                            `Dans ${daysUntil} jours`}
+                          </span>
                         </div>
-                      <span className={`px-2 sm:px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap ${
-                        daysUntil <= 3 ? 'badge-red' :
-                        daysUntil <= 7 ? 'badge-orange' :
-                        'badge-blue'
-                      }`}>
-                        {daysUntil === 0 ? "Aujourd'hui" :
-                        daysUntil === 1 ? 'Demain' :
-                        `Dans ${daysUntil} jours`}
-                      </span>
+                        <div className="text-xs sm:text-sm text-theme-muted">
+                          📅 {procedure.displayDate.toLocaleDateString('fr-FR', {
+                            weekday: 'long',
+                            day: 'numeric',
+                            month: 'long',
+                            year: 'numeric',
+                            hour: '2-digit',
+                            minute: '2-digit'
+                          })}
+                          {procedure.isDeadline && <span className="ml-2 text-red-400">(Deadline)</span>}
+                        </div>
                       </div>
-                      <div className="text-xs sm:text-sm text-theme-muted">
-                        📅 {new Date(procedure.date_evenement!).toLocaleDateString('fr-FR', {
-                          weekday: 'long',
-                          day: 'numeric',
-                          month: 'long',
-                          year: 'numeric',
-                          hour: '2-digit',
-                          minute: '2-digit'
-                        })}
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            );
-          })()}
+                    );
+                  })}
+                </div>
+              );
+            })()}
         </div>
       </div>
     </div>
