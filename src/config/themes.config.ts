@@ -17,6 +17,7 @@ export interface ThemeColors {
   textPrimary: string;
   textSecondary: string;
   textMuted: string;
+  textLabel: string;
   
   // Accents (pour gradients et solides)
   accentStart: string;    // Début du gradient
@@ -54,6 +55,7 @@ export interface Theme {
     textPrimary: string;
     textSecondary: string;
     textMuted: string;
+    textLabel: string;
     
     // Gradients (boutons, cards spéciales)
     accentGradient: string;           // from-X to-Y
@@ -90,6 +92,7 @@ export const themes: Record<ThemeName, Theme> = {
       textPrimary: '255, 255, 255', // white
       textSecondary: '203, 213, 225', // slate-300
       textMuted: '148, 163, 184',   // slate-400
+      textLabel: '170, 170, 170',   // slate-200
       
       accentStart: '99, 102, 241',  // indigo-500
       accentEnd: '147, 51, 234',    // purple-600
@@ -114,6 +117,7 @@ export const themes: Record<ThemeName, Theme> = {
       textPrimary: 'text-white',
       textSecondary: 'text-slate-300',
       textMuted: 'text-slate-400',
+      textLabel: 'text-slate-200',
       
       accentGradient: 'bg-gradient-to-r from-indigo-500 to-purple-600',
       accentGradientHover: 'hover:from-indigo-600 hover:to-purple-700',
@@ -146,6 +150,7 @@ export const themes: Record<ThemeName, Theme> = {
       textPrimary: '17, 24, 39',    // gray-900
       textSecondary: '55, 65, 81',  // gray-700
       textMuted: '107, 114, 128',   // gray-500
+      textLabel: '75, 85, 99',      // gray-600
       
       accentStart: '79, 70, 229',   // indigo-600
       accentEnd: '126, 34, 206',    // purple-700
@@ -170,6 +175,7 @@ export const themes: Record<ThemeName, Theme> = {
       textPrimary: 'text-gray-900',
       textSecondary: 'text-gray-700',
       textMuted: 'text-gray-500',
+      textLabel: 'text-gray-600',
       
       accentGradient: 'bg-gradient-to-r from-indigo-600 to-purple-700',
       accentGradientHover: 'hover:from-indigo-700 hover:to-purple-800',

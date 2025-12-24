@@ -2,20 +2,37 @@ import { useDashboard } from '../../hooks/useDashboard';
 import SkeletonCard from '../../components/common/SkeletonCard';
 import { useDossiers } from '../../hooks/useDossiers';
 import { useProcedures } from '../../hooks/useProcedures';
+import { useTaches } from '../../hooks/useTaches';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { 
   MdFolder,
   MdPeople, 
   MdWarning, 
-  MdAttachMoney
+  MdAttachMoney,
+  MdCheckCircle
 } from 'react-icons/md';
+import type { Procedure } from '../../types/procedure.types';
+import type { Tache } from '../../types/tache.types';
+
+// Type pour unifier procédures et tâches
+type UpcomingItem = {
+  id: string;
+  id_dossier: string;
+  titre: string;
+  displayDate: Date;
+  type: 'procedure' | 'tache';
+  isDeadline?: boolean;
+  priorite?: 'low' | 'normal' | 'high' | 'critical';
+  statut?: string;
+};
 
 export default function Dashboard() {
   const { t } = useTranslation();
   const { stats, isLoading, error } = useDashboard();
   const { dossiers } = useDossiers();
   const { procedures } = useProcedures(undefined);
+  const { taches } = useTaches();
   const navigate = useNavigate();
 
   if (isLoading) {
@@ -136,7 +153,7 @@ export default function Dashboard() {
           
           {dossiers.length === 0 ? (
             <div className="text-center py-8 sm:py-12 text-theme-muted text-sm sm:text-base">
-              Aucun dossier
+             {t('dashboard.noCases')}
             </div>
           ) : (
             <div className="space-y-2 sm:space-y-3 max-h-[400px] sm:max-h-[500px] overflow-y-auto">
@@ -166,87 +183,141 @@ export default function Dashboard() {
           )}
         </div>
 
-        {/* Zone 2 - Échéances Prochaines */}
+        {/* Zone 2 - Échéances Prochaines (Procédures + Tâches) */}
         <div className="bg-theme-surface border-theme border rounded-2xl p-4 sm:p-6">
           <h3 className="text-lg sm:text-xl font-bold text-theme-primary mb-4 sm:mb-6">{t('dashboard.upcomingDeadlines')}</h3>
           
          {(() => {
               const now = new Date();
-              const prochaines = procedures
+              
+              // Mapper les procédures
+              const proceduresItems: UpcomingItem[] = procedures
                 .filter(p => {
                   const dateEvenement = p.date_evenement ? new Date(p.date_evenement) : null;
                   const deadline = p.deadline ? new Date(p.deadline) : null;
-                  const keep = (dateEvenement && dateEvenement > now) || (deadline && deadline > now);
-                  return keep;
+                  return (dateEvenement && dateEvenement > now) || (deadline && deadline > now);
                 })
-               .map(p => {
-                const dateEvenement = p.date_evenement ? new Date(p.date_evenement) : null;
-                const deadline = p.deadline ? new Date(p.deadline) : null;
-                
-                let displayDate: Date;
-                let isDeadline = false;
-                
-                if (dateEvenement && deadline) {
-                  // Prendre la date FUTURE la plus proche
-                  if (dateEvenement > now && deadline > now) {
-                    // Les deux sont dans le futur, prendre la plus proche
-                    displayDate = dateEvenement < deadline ? dateEvenement : deadline;
-                    isDeadline = deadline <= dateEvenement;
-                  } else if (deadline > now) {
+                .map(p => {
+                  const dateEvenement = p.date_evenement ? new Date(p.date_evenement) : null;
+                  const deadline = p.deadline ? new Date(p.deadline) : null;
+                  
+                  let displayDate: Date;
+                  let isDeadline = false;
+                  
+                  if (dateEvenement && deadline) {
+                    if (dateEvenement > now && deadline > now) {
+                      displayDate = dateEvenement < deadline ? dateEvenement : deadline;
+                      isDeadline = deadline <= dateEvenement;
+                    } else if (deadline > now) {
+                      displayDate = deadline;
+                      isDeadline = true;
+                    } else {
+                      displayDate = dateEvenement;
+                    }
+                  } else if (deadline) {
                     displayDate = deadline;
                     isDeadline = true;
                   } else {
-                    displayDate = dateEvenement;
+                    displayDate = dateEvenement!;
                   }
-                } else if (deadline) {
-                  displayDate = deadline;
-                  isDeadline = true;
-                } else {
-                  displayDate = dateEvenement!;
-                }
-                
-                console.log('mapped:', p.titre, 'displayDate:', displayDate, 'isDeadline:', isDeadline);
-                return { ...p, displayDate, isDeadline };
-              })
-                .filter(p => p.displayDate > now)
-                .sort((a, b) => a.displayDate.getTime() - b.displayDate.getTime())
-                .slice(0, 5);
+                  
+                  return {
+                    id: p.id,
+                    id_dossier: p.id_dossier,
+                    titre: p.titre,
+                    displayDate,
+                    type: 'procedure' as const,
+                    isDeadline,
+                    priorite: p.priorite,
+                    statut: p.statut
+                  };
+                })
+                .filter(p => p.displayDate > now);
 
-              return prochaines.length === 0 ? (
+              // Mapper les tâches avec date d'échéance
+              const tachesItems: UpcomingItem[] = taches
+                .filter(t => {
+                  // Ne garder que les tâches non terminées/annulées avec une date d'échéance future
+                  if (t.statut === 'completed' || t.statut === 'cancelled') return false;
+                  if (!t.date_echeance) return false;
+                  const echeance = new Date(t.date_echeance);
+                  return echeance > now;
+                })
+                .map(t => ({
+                  id: t.id,
+                  id_dossier: t.id_dossier,
+                  titre: t.titre,
+                  displayDate: new Date(t.date_echeance!),
+                  type: 'tache' as const,
+                  isDeadline: true, // Les tâches sont toujours des deadlines
+                  priorite: t.priorite,
+                  statut: t.statut
+                }));
+
+              // Combiner et trier par date
+              const allItems = [...proceduresItems, ...tachesItems]
+                .sort((a, b) => a.displayDate.getTime() - b.displayDate.getTime())
+                .slice(0, 8); // Afficher jusqu'à 8 items
+
+              return allItems.length === 0 ? (
                 <div className="text-center py-8 sm:py-12 text-theme-muted text-sm sm:text-base">
-                  Aucune échéance prochaine
+                  {t('dashboard.noUpcomingDeadlines')}
                 </div>
               ) : (
                 <div className="space-y-2 sm:space-y-3 max-h-[400px] sm:max-h-[500px] overflow-y-auto">
-                  {prochaines.map(procedure => {
-                    const dossier = dossiers.find(d => d.id === procedure.id_dossier);
-                    const daysUntil = Math.ceil((procedure.displayDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+                  {allItems.map(item => {
+                    const dossier = dossiers.find(d => d.id === item.id_dossier);
+                    const daysUntil = Math.ceil((item.displayDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+                    
+                    // Icône selon le type
+                    const icon = item.type === 'tache' ? '✓' : (item.isDeadline ? '⏰' : '📅');
                     
                     return (
                       <div
-                        key={procedure.id}
-                        onClick={() => navigate(`/dossiers/${procedure.id_dossier}`)}
+                        key={`${item.type}-${item.id}`}
+                        onClick={() => navigate(`/dossiers/${item.id_dossier}`)}
                         className="p-3 sm:p-4 bg-theme-tertiary hover:bg-opacity-80 rounded-xl border-theme border hover:border-opacity-80 transition-all cursor-pointer"
                       >
                         <div className="flex items-start justify-between mb-2 gap-2">
                           <div className="flex-1 min-w-0">
-                            <h4 className="font-semibold text-theme-primary mb-1 text-sm sm:text-base truncate">
-                              {procedure.isDeadline ? '⏰ ' : ''}{procedure.titre}
-                            </h4>
-                            <p className="text-xs sm:text-sm text-theme-secondary truncate">{dossier?.titre || 'Dossier inconnu'}</p>
+                            <div className="flex items-center gap-2 mb-1">
+                              <h4 className="font-semibold text-theme-primary text-sm sm:text-base truncate">
+                                {icon} {item.titre}
+                              </h4>
+                              {item.type === 'tache' && (
+                                <span className="px-2 py-0.5 rounded-md text-xs font-medium bg-blue-500/20 text-blue-400 border border-blue-500/30 whitespace-nowrap">
+                                  Tâche
+                                </span>
+                              )}
+                            </div>
+                            <p className="text-xs sm:text-sm text-theme-secondary truncate">
+                              {dossier?.titre || 'Dossier inconnu'}
+                            </p>
                           </div>
-                          <span className={`px-2 sm:px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap ${
-                            daysUntil <= 3 ? 'badge-red' :
-                            daysUntil <= 7 ? 'badge-orange' :
-                            'badge-blue'
-                          }`}>
-                            {daysUntil === 0 ? "Aujourd'hui" :
-                            daysUntil === 1 ? 'Demain' :
-                            `Dans ${daysUntil} jours`}
-                          </span>
+                          <div className="flex flex-col items-end gap-1">
+                            <span className={`px-2 sm:px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap ${
+                              daysUntil <= 3 ? 'badge-red' :
+                              daysUntil <= 7 ? 'badge-orange' :
+                              'badge-blue'
+                            }`}>
+                              {daysUntil === 0 ? "Aujourd'hui" :
+                              daysUntil === 1 ? 'Demain' :
+                              `Dans ${daysUntil} jours`}
+                            </span>
+                            {item.priorite && (
+                              <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${
+                                item.priorite === 'critical' ? 'badge-red' :
+                                item.priorite === 'high' ? 'badge-orange' :
+                                item.priorite === 'normal' ? 'badge-blue' :
+                                'badge-gray'
+                              }`}>
+                                {t(`taches.priorite.${item.priorite}`)}
+                              </span>
+                            )}
+                          </div>
                         </div>
                         <div className="text-xs sm:text-sm text-theme-muted">
-                          📅 {procedure.displayDate.toLocaleDateString('fr-FR', {
+                          📅 {item.displayDate.toLocaleDateString('fr-FR', {
                             weekday: 'long',
                             day: 'numeric',
                             month: 'long',
@@ -254,7 +325,9 @@ export default function Dashboard() {
                             hour: '2-digit',
                             minute: '2-digit'
                           })}
-                          {procedure.isDeadline && <span className="ml-2 text-red-400">(Deadline)</span>}
+                          {item.type === 'procedure' && item.isDeadline && (
+                            <span className="ml-2 text-red-400">(Deadline)</span>
+                          )}
                         </div>
                       </div>
                     );

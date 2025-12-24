@@ -27,12 +27,12 @@ export default function Login() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     try {
       await login(email, password);
       navigate(ROUTES.DASHBOARD.HOME);
     } catch (err) {
-      // Erreur gérée dans le store
+      // Erreur gérée dans le store et affichée dans la div d'erreur
     }
   };
 

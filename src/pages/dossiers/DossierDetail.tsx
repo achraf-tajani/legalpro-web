@@ -242,32 +242,32 @@ const tabs = [
         </div>
       </div>
         {/* Tabs */}
-        <div className="bg-theme-surface border-theme border rounded-2xl overflow-hidden">
-          <div className="border-theme border-b flex overflow-x-auto" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
-            {tabs.map((tab) => (
-                <button
-                        key={tab.key}
-                        onClick={() => setActiveTab(tab.key)}
-                        className={`cursor-pointer flex items-center space-x-1 sm:space-x-2 px-3 sm:px-6 py-3 sm:py-4 font-medium transition-all whitespace-nowrap border-b-2 text-sm sm:text-base flex-shrink-0 ${
-                          activeTab === tab.key
-                            ? 'border-accent-start text-theme-primary bg-theme-tertiary'
-                            : 'border-transparent text-theme-muted hover:text-theme-primary hover:bg-theme-tertiary hover:bg-opacity-30'
-                        }`}
-                        style={activeTab === tab.key ? { borderBottomColor: `rgb(var(--color-accentStart))` } : undefined}
-                      >
-                        <span className="text-lg sm:text-xl">{tab.icon}</span>
-                        <span className="hidden md:inline">{tab.label}</span>
-                        {tab.count !== undefined && tab.count > 0 && (
-                          <span className="px-1.5 sm:px-2 py-0.5 rounded-full text-xs" style={{ 
-                            backgroundColor: `rgba(var(--color-accentStart), 0.2)`,
-                            color: `rgb(var(--color-accentStart))`
-                          }}>
-                            {tab.count}
-                          </span>
-                        )}
-                      </button>
-            ))}
-          </div>
+      <div className="bg-theme-surface border-theme border rounded-2xl overflow-hidden">
+        {/* Scroll UNIQUEMENT ici avec width calculée */}
+        <div className="border-theme border-b overflow-x-auto overflow-y-hidden w-full lg:w-[calc(100vw-18rem)]">
+          <div className="flex min-w-max">
+          {tabs.map((tab) => (
+            <button
+              key={tab.key}
+              onClick={() => setActiveTab(tab.key)}
+              className={`flex items-center space-x-2 px-4 md:px-6 py-3 font-medium whitespace-nowrap border-b-2 transition-all ${
+                activeTab === tab.key
+                  ? 'text-white bg-slate-800'
+                  : 'text-slate-400 hover:text-white hover:bg-slate-800/30 border-transparent'
+              }`}
+              style={activeTab === tab.key ? { borderBottomColor: `rgb(var(--color-accentStart))` } : {}}
+            >
+              <span className="text-xl">{tab.icon}</span>
+              <span>{tab.label}</span>
+              {tab.count !== undefined && tab.count > 0 && (
+                <span className="px-2 py-0.5 rounded-full text-xs bg-indigo-500/20 text-indigo-400">
+                  {tab.count}
+                </span>
+              )}
+            </button>
+          ))}
+        </div>
+      </div>
 
           {/* Content */}
           <div className="p-4 sm:p-6">

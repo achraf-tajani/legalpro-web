@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { MdClose } from 'react-icons/md';
 import { useTranslation } from 'react-i18next';
 import type { CreateDossierDto, UpdateDossierDto, Dossier } from '../../../types/dossier.types';
+import { showSuccessAlert, showErrorAlert } from '../../../utils/alerts';
 
 interface CreateDossierModalProps {
   isOpen: boolean;
@@ -74,16 +75,61 @@ export default function CreateDossierModal({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Validation côté client
+    if (!formData.id_client) {
+      await showErrorAlert(
+        t('dossiers.error.createTitle') || 'Erreur de création',
+        t('dossiers.error.clientRequired') || 'Veuillez sélectionner un client'
+      );
+      return;
+    }
+
     setIsLoading(true);
     try {
       if (mode === 'edit' && dossier && onUpdate) {
         await onUpdate(dossier.id, formData);
+        await showSuccessAlert(
+          t('dossiers.success.updated') || 'Dossier modifié',
+          t('dossiers.success.updatedMessage') || 'Le dossier a été modifié avec succès'
+        );
       } else {
         await onSubmit(formData);
+        await showSuccessAlert(
+          t('dossiers.success.created') || 'Dossier créé',
+          t('dossiers.success.createdMessage') || 'Le dossier a été créé avec succès'
+        );
       }
       onClose();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Erreur lors de la sauvegarde:', error);
+
+      // Extraire le message d'erreur
+      let errorMessage = t('dossiers.error.generic') || 'Une erreur est survenue';
+
+      if (error?.response?.data?.message) {
+        const apiMessage = error.response.data.message;
+        // Personnaliser les messages d'erreur de l'API
+        if (Array.isArray(apiMessage)) {
+          errorMessage = apiMessage.join(', ');
+        } else if (typeof apiMessage === 'string') {
+          // Traduire les erreurs communes
+          if (apiMessage.includes('id_client') || apiMessage.includes('client')) {
+            errorMessage = t('dossiers.error.clientRequired') || 'Veuillez sélectionner un client';
+          } else {
+            errorMessage = apiMessage;
+          }
+        }
+      } else if (error?.message) {
+        errorMessage = error.message;
+      }
+
+      await showErrorAlert(
+        mode === 'edit'
+          ? (t('dossiers.error.updateTitle') || 'Erreur de modification')
+          : (t('dossiers.error.createTitle') || 'Erreur de création'),
+        errorMessage
+      );
     } finally {
       setIsLoading(false);
     }
@@ -115,13 +161,13 @@ export default function CreateDossierModal({
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {/* Titre */}
             <div className="sm:col-span-2">
-              <label className="block text-sm font-medium text-theme-secondary mb-2">
+              <label className="block text-sm font-medium text-theme-label mb-2">
                 {t('dossiers.modal.title')} *
               </label>
                 <input
                   type="text"
                   required
-                  value={formData.titre}
+                  value={formData.titre || ''}
                   onChange={(e) => setFormData({ ...formData, titre: e.target.value })}
                   className="w-full px-4 py-3 bg-theme-tertiary border-theme border rounded-xl text-theme-primary placeholder-opacity-50 focus:ring-2 focus:ring-offset-0 transition-all"
                   placeholder={t('dossiers.modal.titlePlaceholder')}
@@ -130,12 +176,12 @@ export default function CreateDossierModal({
 
             {/* Type */}
             <div>
-              <label className="block text-sm font-medium text-theme-secondary mb-2">
+              <label className="block text-sm font-medium text-theme-label mb-2">
                 {t('dossiers.modal.type')} *
               </label>
               <select
                 required
-                value={formData.type}
+                value={formData.type || ''}
                 onChange={(e) => setFormData({ ...formData, type: e.target.value })}
                 className="w-full px-4 py-3 bg-theme-tertiary border-theme border rounded-xl text-theme-primary focus:ring-2 focus:ring-offset-0 transition-all"
               >
@@ -149,11 +195,12 @@ export default function CreateDossierModal({
 
             {/* Client */}
             <div>
-              <label className="block text-sm font-medium text-theme-secondary mb-2">
-                {t('dossiers.modal.client')}
+              <label className="block text-sm font-medium text-theme-label mb-2">
+                {t('dossiers.modal.client')} *
               </label>
               <select
-                value={formData.id_client}
+                required
+                value={formData.id_client || ''}
                 onChange={(e) => setFormData({ ...formData, id_client: e.target.value })}
                 className="w-full px-4 py-3 bg-theme-tertiary border-theme border rounded-xl text-theme-primary focus:ring-2 focus:ring-offset-0 transition-all"
               >
@@ -168,7 +215,7 @@ export default function CreateDossierModal({
 
             {/* Statut */}
             <div>
-              <label className="block text-sm font-medium text-theme-secondary mb-2">
+              <label className="block text-sm font-medium text-theme-label mb-2">
                 {t('dossiers.modal.statut')}
               </label>
               <select
@@ -186,7 +233,7 @@ export default function CreateDossierModal({
 
             {/* Priorité */}
             <div>
-              <label className="block text-sm font-medium text-theme-secondary mb-2">
+              <label className="block text-sm font-medium text-theme-label mb-2">
                 {t('dossiers.modal.priorite')}
               </label>
               <select
@@ -201,14 +248,44 @@ export default function CreateDossierModal({
               </select>
             </div>
 
+            {/* Domaine */}
+            <div>
+              <label className="block text-sm font-medium text-theme-label mb-2">
+                {t('dossiers.modal.domaine')}
+              </label>
+              <input
+                type="text"
+                value={formData.domaine || ''}
+                onChange={(e) => setFormData({ ...formData, domaine: e.target.value })}
+                className="w-full px-4 py-3 bg-theme-tertiary border-theme border rounded-xl text-theme-primary placeholder-opacity-50 focus:ring-2 focus:ring-offset-0 transition-all"
+                placeholder={t('dossiers.modal.domainePlaceholder')}
+              />
+            </div>
+
+            {/* Montant en jeu */}
+            <div>
+              <label className="block text-sm font-medium text-theme-label mb-2">
+                {t('dossiers.modal.montantEnJeu')}
+              </label>
+              <input
+                type="number"
+                min="0"
+                step="0.01"
+                value={formData.montant_en_jeu || ''}
+                onChange={(e) => setFormData({ ...formData, montant_en_jeu: e.target.value ? parseFloat(e.target.value) : undefined })}
+                className="w-full px-4 py-3 bg-theme-tertiary border-theme border rounded-xl text-theme-primary placeholder-opacity-50 focus:ring-2 focus:ring-offset-0 transition-all"
+                placeholder={t('dossiers.modal.montantEnJeuPlaceholder')}
+              />
+            </div>
+
             {/* Description */}
             <div className="sm:col-span-2">
-              <label className="block text-sm font-medium text-theme-secondary mb-2">
+              <label className="block text-sm font-medium text-theme-label mb-2">
                 {t('dossiers.modal.description')}
               </label>
               <textarea
                 rows={4}
-                value={formData.description}
+                value={formData.description || ''}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                 className="w-full px-4 py-3 bg-theme-tertiary border-theme border rounded-xl text-theme-primary placeholder-opacity-50 focus:ring-2 focus:ring-offset-0 transition-all resize-none"
                 placeholder={t('dossiers.modal.descriptionPlaceholder')}
@@ -223,14 +300,13 @@ export default function CreateDossierModal({
             type="button"
             onClick={onClose}
             disabled={isLoading}
-            className="w-full sm:w-auto px-6 py-3 border-theme border rounded-xl text-theme-secondary font-semibold hover:bg-theme-tertiary transition-all disabled:opacity-50"
-          >
+            className="cursor-pointer w-full sm:w-auto px-6 py-3 bg-theme-secondary border-theme border rounded-xl text-theme-secondary font-semibold hover:bg-theme-tertiary transition-all disabled:opacity-50"          >
             {t('common.cancel')}
           </button>
           <button
             onClick={handleSubmit}
             disabled={isLoading}
-            className="w-full sm:w-auto px-6 py-3 bg-accent-gradient hover:bg-accent-gradient-hover text-white rounded-xl font-semibold shadow-lg transition-all disabled:opacity-50 flex items-center justify-center space-x-2"
+            className="cursor-pointer w-full sm:w-auto px-6 py-3 bg-accent-gradient hover:bg-accent-gradient-hover text-white rounded-xl font-semibold shadow-lg transition-all disabled:opacity-50 flex items-center justify-center space-x-2"
           >
             {isLoading ? (
               <>

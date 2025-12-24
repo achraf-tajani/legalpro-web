@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { MdClose } from 'react-icons/md';
 import type { Note, CreateNoteDto, UpdateNoteDto } from '../../../types/note.types';
+import { showSuccessAlert, showErrorAlert } from '../../../utils/alerts';
 
 interface CreateNoteModalProps {
   isOpen: boolean;
@@ -52,7 +53,10 @@ export default function CreateNoteModal({
     e.preventDefault();
 
     if (!formData.titre.trim()) {
-      alert(t('notes.titre') + ' requis');
+      await showErrorAlert(
+        'Champ requis',
+        t('notes.titre') + ' est requis'
+      );
       return;
     }
 
@@ -61,17 +65,32 @@ export default function CreateNoteModal({
 
       if (mode === 'edit' && note && onUpdate) {
         await onUpdate(note.id, formData);
+        await showSuccessAlert(
+          'Note modifiée',
+          'La note a été modifiée avec succès'
+        );
       } else {
         await onSubmit({
           id_dossier: dossierId,
           ...formData,
         });
+        await showSuccessAlert(
+          'Note créée',
+          'La note a été créée avec succès'
+        );
       }
 
       onClose();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Erreur:', error);
-      alert(t('common.error'));
+      const errorMessage = error?.response?.data?.message ||
+                          error?.message ||
+                          'Une erreur est survenue';
+
+      await showErrorAlert(
+        mode === 'edit' ? 'Erreur de modification' : 'Erreur de création',
+        errorMessage
+      );
     } finally {
       setIsSaving(false);
     }

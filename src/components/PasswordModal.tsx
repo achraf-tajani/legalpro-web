@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { MdClose, MdCheck, MdLock } from 'react-icons/md';
 import { authService } from '../services/auth.service';
+import { showSuccessAlert, showErrorAlert } from '../utils/alerts';
 
 interface PasswordModalProps {
   isOpen: boolean;
@@ -9,7 +10,7 @@ interface PasswordModalProps {
 }
 
 export default function PasswordModal({ isOpen, onClose }: PasswordModalProps) {
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
   const isRTL = i18n.language === 'ar';
 
   const [oldPassword, setOldPassword] = useState('');
@@ -24,18 +25,28 @@ export default function PasswordModal({ isOpen, onClose }: PasswordModalProps) {
     setError('');
 
     if (newPassword !== confirmPassword) {
-      setError('Les mots de passe ne correspondent pas');
+      await showErrorAlert(
+        t('password.error.mismatch'),
+        t('password.error.mismatchMessage')
+      );
       return;
     }
 
     if (newPassword.length < 8) {
-      setError('Le mot de passe doit contenir au moins 8 caractères');
+      await showErrorAlert(
+        t('password.error.tooShort'),
+        t('password.error.tooShortMessage')
+      );
       return;
     }
 
     setIsSaving(true);
     try {
       await authService.changePassword(oldPassword, newPassword);
+      await showSuccessAlert(
+        t('password.success.changed'),
+        t('password.success.changedMessage')
+      );
       setSuccess(true);
       setTimeout(() => {
         onClose();
@@ -45,7 +56,12 @@ export default function PasswordModal({ isOpen, onClose }: PasswordModalProps) {
         setConfirmPassword('');
       }, 2000);
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Mot de passe actuel incorrect');
+      const errorMessage = err?.response?.data?.message ||
+                          t('password.error.currentIncorrect');
+      await showErrorAlert(
+        t('password.error.changeError'),
+        errorMessage
+      );
     } finally {
       setIsSaving(false);
     }
@@ -64,7 +80,7 @@ export default function PasswordModal({ isOpen, onClose }: PasswordModalProps) {
           <div className="flex items-center space-x-3">
             <MdLock className="text-white text-xl sm:text-2xl" />
             <h2 className="text-xl sm:text-2xl font-bold text-white">
-              Modifier mot de passe
+              {t('password.title')}
             </h2>
           </div>
           <button
@@ -80,7 +96,7 @@ export default function PasswordModal({ isOpen, onClose }: PasswordModalProps) {
             <div className="w-20 h-20 bg-green-500/20 rounded-full flex items-center justify-center mb-4">
               <MdCheck className="text-4xl text-green-500" />
             </div>
-            <p className="text-theme-primary text-lg font-medium">Mot de passe mis à jour !</p>
+            <p className="text-theme-primary text-lg font-medium">{t('password.success.updated')}</p>
           </div>
         ) : (
           <>
@@ -95,7 +111,7 @@ export default function PasswordModal({ isOpen, onClose }: PasswordModalProps) {
               {/* Mot de passe actuel */}
               <div>
                 <label className="block text-sm font-medium text-theme-secondary mb-2">
-                  Mot de passe actuel *
+                  {t('password.currentPassword')} *
                 </label>
                 <input
                   type="password"
@@ -110,7 +126,7 @@ export default function PasswordModal({ isOpen, onClose }: PasswordModalProps) {
               {/* Nouveau mot de passe */}
               <div>
                 <label className="block text-sm font-medium text-theme-secondary mb-2">
-                  Nouveau mot de passe *
+                  {t('password.newPassword')} *
                 </label>
                 <input
                   type="password"
@@ -120,13 +136,13 @@ export default function PasswordModal({ isOpen, onClose }: PasswordModalProps) {
                   placeholder="••••••••"
                   required
                 />
-                <p className="text-xs text-theme-muted mt-1">Minimum 8 caractères</p>
+                <p className="text-xs text-theme-muted mt-1">{t('password.minLength')}</p>
               </div>
 
               {/* Confirmer mot de passe */}
               <div>
                 <label className="block text-sm font-medium text-theme-secondary mb-2">
-                  Confirmer le mot de passe *
+                  {t('password.confirmPassword')} *
                 </label>
                 <input
                   type="password"
@@ -146,7 +162,7 @@ export default function PasswordModal({ isOpen, onClose }: PasswordModalProps) {
                 onClick={onClose}
                 className="w-full sm:w-auto px-6 py-3 bg-theme-tertiary hover:bg-opacity-80 text-theme-secondary border-theme border rounded-xl font-semibold transition-all"
               >
-                Annuler
+                {t('common.cancel')}
               </button>
               <button
                 type="submit"
@@ -154,7 +170,7 @@ export default function PasswordModal({ isOpen, onClose }: PasswordModalProps) {
                 disabled={isSaving}
                 className="w-full sm:w-auto px-6 py-3 bg-accent-gradient hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-xl font-semibold shadow-lg transition-all"
               >
-                {isSaving ? 'Mise à jour...' : 'Confirmer'}
+                {isSaving ? t('common.saving') : t('password.confirm')}
               </button>
             </div>
           </>

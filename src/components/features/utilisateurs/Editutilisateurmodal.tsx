@@ -3,6 +3,7 @@ import { MdClose, MdEdit } from 'react-icons/md';
 import { useTranslation } from 'react-i18next';
 import { utilisateurService } from '../../../services/utilisateur.service';
 import type { Utilisateur, UpdateUtilisateurDto, UpdateAvocatDto } from '../../../types/utilisateur.types';
+import { showSuccessAlert, showErrorAlert } from '../../../utils/alerts';
 
 interface EditUtilisateurModalProps {
   isOpen: boolean;
@@ -12,7 +13,7 @@ interface EditUtilisateurModalProps {
 }
 
 export default function EditUtilisateurModal({ isOpen, onClose, utilisateur, onSuccess }: EditUtilisateurModalProps) {
-  const {  i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
   const isRTL = i18n.language === 'ar';
   const [isUpdating, setIsUpdating] = useState(false);
 
@@ -40,11 +41,22 @@ export default function EditUtilisateurModal({ isOpen, onClose, utilisateur, onS
       if (utilisateur.avocat_id) {
         await utilisateurService.updateAvocat(utilisateur.avocat_id, avocatData);
       }
+      await showSuccessAlert(
+        t('utilisateurs.success.updated'),
+        t('utilisateurs.success.updatedMessage')
+      );
       onSuccess();
       onClose();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Erreur:', error);
-      alert('Erreur lors de la mise à jour');
+      const errorMessage = error?.response?.data?.message ||
+                          error?.message ||
+                          t('utilisateurs.error.update');
+
+      await showErrorAlert(
+        t('utilisateurs.error.updateTitle'),
+        errorMessage
+      );
     } finally {
       setIsUpdating(false);
     }
@@ -63,7 +75,7 @@ export default function EditUtilisateurModal({ isOpen, onClose, utilisateur, onS
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
               <MdEdit className="text-2xl sm:text-3xl text-white" />
-              <h2 className="text-xl sm:text-2xl font-bold text-white">Modifier l'utilisateur</h2>
+              <h2 className="text-xl sm:text-2xl font-bold text-white">{t('utilisateurs.edit.title')}</h2>
             </div>
             <button onClick={onClose} className="p-2 hover:bg-white/10 rounded-lg transition-colors text-white">
               <MdClose className="text-xl sm:text-2xl" />
@@ -76,11 +88,11 @@ export default function EditUtilisateurModal({ isOpen, onClose, utilisateur, onS
           
           {/* Info Utilisateur */}
           <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-theme-primary">Informations utilisateur</h3>
-            
+            <h3 className="text-lg font-semibold text-theme-primary">{t('utilisateurs.modal.userInfo')}</h3>
+
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-theme-secondary mb-2">Nom</label>
+                <label className="block text-sm font-medium text-theme-secondary mb-2">{t('utilisateurs.modal.nom')}</label>
                 <input
                   type="text"
                   value={userData.nom}
@@ -89,7 +101,7 @@ export default function EditUtilisateurModal({ isOpen, onClose, utilisateur, onS
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-theme-secondary mb-2">Prénom</label>
+                <label className="block text-sm font-medium text-theme-secondary mb-2">{t('utilisateurs.modal.prenom')}</label>
                 <input
                   type="text"
                   value={userData.prenom}
@@ -101,25 +113,25 @@ export default function EditUtilisateurModal({ isOpen, onClose, utilisateur, onS
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-theme-secondary mb-2">Rôle</label>
+                <label className="block text-sm font-medium text-theme-secondary mb-2">{t('utilisateurs.modal.role')}</label>
                 <select
                   value={userData.type_utilisateur}
                   onChange={(e) => setUserData({ ...userData, type_utilisateur: e.target.value as any })}
                   className="w-full px-4 py-3 bg-theme-tertiary border-theme border rounded-xl text-theme-primary focus:ring-2 focus:ring-offset-0"
                 >
-                  <option value="avocat">Avocat</option>
-                  <option value="admin">Administrateur</option>
+                  <option value="avocat">{t('utilisateurs.modal.avocat')}</option>
+                  <option value="admin">{t('utilisateurs.modal.admin')}</option>
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-theme-secondary mb-2">Statut compte</label>
+                <label className="block text-sm font-medium text-theme-secondary mb-2">{t('utilisateurs.modal.statutCompte')}</label>
                 <select
                   value={userData.est_actif ? 'actif' : 'inactif'}
                   onChange={(e) => setUserData({ ...userData, est_actif: e.target.value === 'actif' })}
                   className="w-full px-4 py-3 bg-theme-tertiary border-theme border rounded-xl text-theme-primary focus:ring-2 focus:ring-offset-0"
                 >
-                  <option value="actif">Actif</option>
-                  <option value="inactif">Inactif</option>
+                  <option value="actif">{t('utilisateurs.modal.actif')}</option>
+                  <option value="inactif">{t('utilisateurs.modal.inactif')}</option>
                 </select>
               </div>
             </div>
@@ -128,11 +140,11 @@ export default function EditUtilisateurModal({ isOpen, onClose, utilisateur, onS
           {/* Info Avocat */}
           {utilisateur.avocat_id && (
             <div className="space-y-4 pt-6 border-t border-theme">
-              <h3 className="text-lg font-semibold text-theme-primary">Informations avocat</h3>
-              
+              <h3 className="text-lg font-semibold text-theme-primary">{t('utilisateurs.modal.avocatInfo')}</h3>
+
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-theme-secondary mb-2">Téléphone</label>
+                  <label className="block text-sm font-medium text-theme-secondary mb-2">{t('utilisateurs.modal.telephone')}</label>
                   <input
                     type="tel"
                     value={avocatData.telephone}
@@ -141,7 +153,7 @@ export default function EditUtilisateurModal({ isOpen, onClose, utilisateur, onS
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-theme-secondary mb-2">Spécialité</label>
+                  <label className="block text-sm font-medium text-theme-secondary mb-2">{t('utilisateurs.modal.specialite')}</label>
                   <input
                     type="text"
                     value={avocatData.specialite}
@@ -151,7 +163,7 @@ export default function EditUtilisateurModal({ isOpen, onClose, utilisateur, onS
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium text-theme-secondary mb-2">Tarif horaire (€)</label>
+                <label className="block text-sm font-medium text-theme-secondary mb-2">{t('utilisateurs.modal.tarifHoraire')}</label>
                 <input
                   type="number"
                   step="0.01"
@@ -161,15 +173,15 @@ export default function EditUtilisateurModal({ isOpen, onClose, utilisateur, onS
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-theme-secondary mb-2">Statut avocat</label>
+                <label className="block text-sm font-medium text-theme-secondary mb-2">{t('utilisateurs.modal.statutAvocat')}</label>
                 <select
                   value={avocatData.statut}
                   onChange={(e) => setAvocatData({ ...avocatData, statut: e.target.value as any })}
                   className="w-full px-4 py-3 bg-theme-tertiary border-theme border rounded-xl text-theme-primary focus:ring-2 focus:ring-offset-0"
                 >
-                  <option value="actif">Actif</option>
-                  <option value="inactif">Inactif</option>
-                  <option value="suspendu">Suspendu</option>
+                  <option value="actif">{t('utilisateurs.modal.actif')}</option>
+                  <option value="inactif">{t('utilisateurs.modal.inactif')}</option>
+                  <option value="suspendu">{t('utilisateurs.modal.suspendu')}</option>
                 </select>
               </div>
             </div>
@@ -184,14 +196,14 @@ export default function EditUtilisateurModal({ isOpen, onClose, utilisateur, onS
             disabled={isUpdating}
             className="w-full sm:w-auto px-6 py-3 border-theme border rounded-xl text-theme-secondary font-semibold hover:bg-theme-tertiary transition-all"
           >
-            Annuler
+            {t('common.cancel')}
           </button>
           <button
             onClick={handleSubmit}
             disabled={isUpdating}
             className="w-full sm:w-auto px-6 py-3 bg-gradient-to-r from-blue-500 to-cyan-600 hover:from-blue-600 hover:to-cyan-700 text-white rounded-xl font-semibold shadow-lg transition-all disabled:opacity-50"
           >
-            {isUpdating ? 'Enregistrement...' : 'Enregistrer'}
+            {isUpdating ? t('common.saving') : t('common.save')}
           </button>
         </div>
       </div>

@@ -3,6 +3,7 @@ import { MdClose, MdPerson, MdContentCopy, MdVisibility, MdVisibilityOff } from 
 import { useTranslation } from 'react-i18next';
 import { utilisateurService} from '../../../services/utilisateur.service';
 import type { CreateAvocatDto } from '../../../types/utilisateur.types';
+import { showSuccessAlert, showErrorAlert, showToast } from '../../../utils/alerts';
 
 interface CreateAvocatModalProps {
   isOpen: boolean;
@@ -11,7 +12,7 @@ interface CreateAvocatModalProps {
 }
 
 export default function CreateAvocatModal({ isOpen, onClose, onSuccess }: CreateAvocatModalProps) {
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
   const isRTL = i18n.language === 'ar';
   const [isCreating, setIsCreating] = useState(false);
   const [generatedPassword, setGeneratedPassword] = useState('');
@@ -36,9 +37,20 @@ export default function CreateAvocatModal({ isOpen, onClose, onSuccess }: Create
       const result = await utilisateurService.createAvocat(formData);
       setGeneratedPassword(result.temporaryPassword);
       setStep('success');
-    } catch (error) {
+      await showSuccessAlert(
+        t('avocats.success.created'),
+        t('avocats.success.createdMessage')
+      );
+    } catch (error: any) {
       console.error('Erreur création:', error);
-      alert('Erreur lors de la création');
+      const errorMessage = error?.response?.data?.message ||
+                          error?.message ||
+                          t('avocats.error.create');
+
+      await showErrorAlert(
+        t('avocats.error.createTitle'),
+        errorMessage
+      );
     } finally {
       setIsCreating(false);
     }
@@ -64,7 +76,7 @@ export default function CreateAvocatModal({ isOpen, onClose, onSuccess }: Create
 
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
-    alert('Copié !');
+    showToast('success', t('avocats.modal.copied'));
   };
 
   if (!isOpen) return null;
@@ -80,7 +92,7 @@ export default function CreateAvocatModal({ isOpen, onClose, onSuccess }: Create
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
               <MdPerson className="text-2xl sm:text-3xl text-white" />
-              <h2 className="text-xl sm:text-2xl font-bold text-white">Créer un compte avocat</h2>
+              <h2 className="text-xl sm:text-2xl font-bold text-white">{t('avocats.new')}</h2>
             </div>
             <button onClick={handleClose} className="p-2 hover:bg-white/10 rounded-lg transition-colors text-white">
               <MdClose className="text-xl sm:text-2xl" />
@@ -96,7 +108,7 @@ export default function CreateAvocatModal({ isOpen, onClose, onSuccess }: Create
               {/* Nom & Prénom */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-theme-secondary mb-2">Nom *</label>
+                  <label className="block text-sm font-medium text-theme-secondary mb-2">{t('avocats.modal.nom')} *</label>
                   <input
                     type="text"
                     required
@@ -106,7 +118,7 @@ export default function CreateAvocatModal({ isOpen, onClose, onSuccess }: Create
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-theme-secondary mb-2">Prénom *</label>
+                  <label className="block text-sm font-medium text-theme-secondary mb-2">{t('avocats.modal.prenom')} *</label>
                   <input
                     type="text"
                     required
@@ -120,7 +132,7 @@ export default function CreateAvocatModal({ isOpen, onClose, onSuccess }: Create
               {/* Email & Téléphone */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-theme-secondary mb-2">Email *</label>
+                  <label className="block text-sm font-medium text-theme-secondary mb-2">{t('avocats.modal.email')} *</label>
                   <input
                     type="email"
                     required
@@ -130,7 +142,7 @@ export default function CreateAvocatModal({ isOpen, onClose, onSuccess }: Create
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-theme-secondary mb-2">Téléphone</label>
+                  <label className="block text-sm font-medium text-theme-secondary mb-2">{t('avocats.modal.telephone')}</label>
                   <input
                     type="tel"
                     value={formData.telephone}
@@ -143,7 +155,7 @@ export default function CreateAvocatModal({ isOpen, onClose, onSuccess }: Create
               {/* Numéro Barreau & Spécialité */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-theme-secondary mb-2">N° Barreau *</label>
+                  <label className="block text-sm font-medium text-theme-secondary mb-2">{t('avocats.modal.numeroBarreau')} *</label>
                   <input
                     type="text"
                     required
@@ -153,7 +165,7 @@ export default function CreateAvocatModal({ isOpen, onClose, onSuccess }: Create
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-theme-secondary mb-2">Spécialité</label>
+                  <label className="block text-sm font-medium text-theme-secondary mb-2">{t('avocats.modal.specialite')}</label>
                   <input
                     type="text"
                     value={formData.specialite}
@@ -165,7 +177,7 @@ export default function CreateAvocatModal({ isOpen, onClose, onSuccess }: Create
 
               {/* Tarif */}
               <div>
-                <label className="block text-sm font-medium text-theme-secondary mb-2">Tarif horaire (€)</label>
+                <label className="block text-sm font-medium text-theme-secondary mb-2">{t('avocats.modal.tarifHoraire')}</label>
                 <input
                   type="number"
                   step="0.01"
@@ -177,22 +189,22 @@ export default function CreateAvocatModal({ isOpen, onClose, onSuccess }: Create
 
               {/* Rôle */}
               <div>
-                <label className="block text-sm font-medium text-theme-secondary mb-2">Rôle *</label>
+                <label className="block text-sm font-medium text-theme-secondary mb-2">{t('avocats.modal.role')} *</label>
                 <select
                   required
                   value={formData.type_utilisateur}
                   onChange={(e) => setFormData({ ...formData, type_utilisateur: e.target.value as 'ADMIN' | 'AVOCAT' })}
                   className="w-full px-4 py-3 bg-theme-tertiary border-theme border rounded-xl text-theme-primary focus:ring-2 focus:ring-offset-0"
                 >
-                  <option value="avocat">Avocat</option>
-                  <option value="admin">Administrateur</option>
+                  <option value="avocat">{t('avocats.modal.avocat')}</option>
+                  <option value="admin">{t('avocats.modal.admin')}</option>
                 </select>
               </div>
 
               {/* Info MDP */}
               <div className="bg-blue-500/10 border border-blue-500/30 rounded-xl p-4">
                 <p className="text-sm text-blue-400">
-                  ℹ️ Un mot de passe temporaire sera généré automatiquement et envoyé par email.
+                  {t('avocats.modal.passwordInfo')}
                 </p>
               </div>
             </form>
@@ -205,14 +217,14 @@ export default function CreateAvocatModal({ isOpen, onClose, onSuccess }: Create
                 disabled={isCreating}
                 className="w-full sm:w-auto px-6 py-3 border-theme border rounded-xl text-theme-secondary font-semibold hover:bg-theme-tertiary transition-all"
               >
-                Annuler
+                {t('common.cancel')}
               </button>
               <button
                 onClick={handleSubmit}
                 disabled={isCreating}
                 className="w-full sm:w-auto px-6 py-3 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white rounded-xl font-semibold shadow-lg transition-all disabled:opacity-50"
               >
-                {isCreating ? 'Création...' : 'Créer le compte'}
+                {isCreating ? t('avocats.modal.creating') : t('avocats.modal.createAccount')}
               </button>
             </div>
           </>
@@ -226,13 +238,13 @@ export default function CreateAvocatModal({ isOpen, onClose, onSuccess }: Create
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                   </svg>
                 </div>
-                <h3 className="text-2xl font-bold text-theme-primary mb-2">Compte créé avec succès !</h3>
-                <p className="text-theme-secondary">Les identifiants ont été générés</p>
+                <h3 className="text-2xl font-bold text-theme-primary mb-2">{t('avocats.success.accountCreated')}</h3>
+                <p className="text-theme-secondary">{t('avocats.success.credentialsGenerated')}</p>
               </div>
 
               <div className="space-y-4">
                 <div className="bg-theme-surface border-theme border rounded-xl p-4">
-                  <label className="block text-sm font-semibold text-theme-secondary mb-2">Email</label>
+                  <label className="block text-sm font-semibold text-theme-secondary mb-2">{t('avocats.modal.email')}</label>
                   <div className="flex items-center justify-between">
                     <p className="text-theme-primary font-mono">{formData.email}</p>
                     <button
@@ -245,7 +257,7 @@ export default function CreateAvocatModal({ isOpen, onClose, onSuccess }: Create
                 </div>
 
                 <div className="bg-theme-surface border-theme border rounded-xl p-4">
-                  <label className="block text-sm font-semibold text-theme-secondary mb-2">Mot de passe temporaire</label>
+                  <label className="block text-sm font-semibold text-theme-secondary mb-2">{t('avocats.modal.tempPassword')}</label>
                   <div className="flex items-center justify-between">
                     <p className="text-theme-primary font-mono">
                       {showPassword ? generatedPassword : '••••••••••••'}
@@ -269,7 +281,7 @@ export default function CreateAvocatModal({ isOpen, onClose, onSuccess }: Create
 
                 <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-xl p-4">
                   <p className="text-sm text-yellow-400">
-                    ⚠️ Envoyez ces identifiants à l'utilisateur de manière sécurisée. Il pourra modifier son mot de passe après sa première connexion.
+                    {t('avocats.modal.securityWarning')}
                   </p>
                 </div>
               </div>
@@ -284,7 +296,7 @@ export default function CreateAvocatModal({ isOpen, onClose, onSuccess }: Create
                 }}
                 className="w-full sm:w-auto px-6 py-3 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white rounded-xl font-semibold shadow-lg transition-all"
               >
-                Terminé
+                {t('avocats.modal.done')}
               </button>
             </div>
           </>

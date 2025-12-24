@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { MdClose } from 'react-icons/md';
 import type { Tache, CreateTacheDto, UpdateTacheDto } from '../../../types/tache.types';
+import { showSuccessAlert, showErrorAlert } from '../../../utils/alerts';
 
 interface CreateTacheModalProps {
   isOpen: boolean;
@@ -90,12 +91,18 @@ export default function CreateTacheModal({
     e.preventDefault();
 
     if (!formData.titre.trim()) {
-      alert(t('taches.titre') + ' requis');
+      await showErrorAlert(
+        'Champ requis',
+        t('taches.titre') + ' est requis'
+      );
       return;
     }
 
     if (!selectedDossierId) {
-      alert(t('factures.create.errorNoDossier'));
+      await showErrorAlert(
+        'Dossier requis',
+        t('factures.create.errorNoDossier') || 'Veuillez sélectionner un dossier'
+      );
       return;
     }
 
@@ -109,14 +116,29 @@ export default function CreateTacheModal({
 
       if (mode === 'edit' && tache && onUpdate) {
         await onUpdate(tache.id, dataToSubmit);
+        await showSuccessAlert(
+          'Tâche modifiée',
+          'La tâche a été modifiée avec succès'
+        );
       } else {
         await onSubmit(dataToSubmit);
+        await showSuccessAlert(
+          'Tâche créée',
+          'La tâche a été créée avec succès'
+        );
       }
 
       onClose();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Erreur:', error);
-      alert(t('common.error'));
+      const errorMessage = error?.response?.data?.message ||
+                          error?.message ||
+                          'Une erreur est survenue';
+
+      await showErrorAlert(
+        mode === 'edit' ? 'Erreur de modification' : 'Erreur de création',
+        errorMessage
+      );
     } finally {
       setIsSaving(false);
     }
@@ -148,7 +170,7 @@ export default function CreateTacheModal({
           {/* Sélecteur de dossier (si plusieurs dossiers disponibles) */}
           {!dossierId && dossiers && dossiers.length > 0 && (
             <div>
-              <label className="block text-sm font-medium text-theme-secondary mb-2">
+              <label className="block text-sm font-medium text-theme-label mb-2">
                 {t('procedures.modal.dossier')} *
               </label>
               <select
@@ -167,7 +189,7 @@ export default function CreateTacheModal({
 
           {/* Titre */}
           <div>
-            <label className="block text-sm font-medium text-theme-secondary mb-2">
+            <label className="block text-sm font-medium text-theme-label mb-2">
               {t('taches.titre')} *
             </label>
             <input
@@ -182,7 +204,7 @@ export default function CreateTacheModal({
 
           {/* Description */}
           <div>
-            <label className="block text-sm font-medium text-theme-secondary mb-2">
+            <label className="block text-sm font-medium text-theme-label mb-2">
               {t('taches.description')}
             </label>
             <textarea
@@ -197,7 +219,7 @@ export default function CreateTacheModal({
           {/* Priorité et Statut */}
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-theme-secondary mb-2">
+              <label className="block text-sm font-medium text-theme-label mb-2">
                 {t('taches.priorite')}
               </label>
               <select
@@ -213,7 +235,7 @@ export default function CreateTacheModal({
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-theme-secondary mb-2">
+              <label className="block text-sm font-medium text-theme-label mb-2">
                 {t('taches.statut')}
               </label>
               <select
@@ -233,7 +255,7 @@ export default function CreateTacheModal({
           {/* Date échéance et Progression */}
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-theme-secondary mb-2">
+              <label className="block text-sm font-medium text-theme-label mb-2">
                 {t('taches.dateEcheance')}
               </label>
               <input
@@ -245,7 +267,7 @@ export default function CreateTacheModal({
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-theme-secondary mb-2">
+              <label className="block text-sm font-medium text-theme-label mb-2">
                 {t('taches.progression')} ({formData.progression}%)
               </label>
               <input
@@ -262,7 +284,7 @@ export default function CreateTacheModal({
 
           {/* Tags */}
           <div>
-            <label className="block text-sm font-medium text-theme-secondary mb-2">
+            <label className="block text-sm font-medium text-theme-label mb-2">
               {t('taches.tags')}
             </label>
             <input
@@ -279,14 +301,14 @@ export default function CreateTacheModal({
             <button
               type="button"
               onClick={onClose}
-              className="w-full sm:w-auto px-6 py-3 bg-gradient-to-r from-blue-500 to-cyan-600 hover:from-blue-600 hover:to-cyan-700 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-xl font-semibold shadow-lg transition-all"
-            >
+              className="cursor-pointer w-full sm:w-auto px-6 py-3 bg-theme-secondary to-cyan-600 hover:from-blue-600 hover:to-cyan-700 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-xl font-semibold shadow-lg transition-all"
+              >
               {t('common.cancel')}
             </button>
             <button
               type="submit"
               disabled={isSaving}
-              className="px-6 py-3 bg-gradient-to-r from-blue-500 to-cyan-600 hover:from-blue-600 hover:to-cyan-700 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-xl font-semibold shadow-lg transition-all"
+              className="cursor-pointer px-6 py-3 bg-gradient-to-r from-blue-500 to-cyan-600 hover:from-blue-600 hover:to-cyan-700 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-xl font-semibold shadow-lg transition-all"
             >
               {isSaving ? t('common.saving') : (mode === 'edit' ? t('common.update') : t('common.create'))}
             </button>

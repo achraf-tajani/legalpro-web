@@ -3,6 +3,7 @@ import { MdClose } from 'react-icons/md';
 import { useTranslation } from 'react-i18next';
 import type { CreateProcedureDto, Procedure } from '../../../types/procedure.types';
 import { PROCEDURES_PAR_TYPE_DOSSIER, PROCEDURES_COMMUNES } from '../../../config/procedures.config';
+import { showSuccessAlert, showErrorAlert } from '../../../utils/alerts';
 
 interface CreateProcedureModalProps {
   isOpen: boolean;
@@ -122,13 +123,29 @@ export default function CreateProcedureModal({
     try {
       if (mode === 'edit' && procedure && onUpdate) {
         await onUpdate(procedure.id, formData);
+        await showSuccessAlert(
+          t('procedures.success.updated'),
+          t('procedures.success.updatedMessage')
+        );
       } else {
         await onSubmit(formData);
+        await showSuccessAlert(
+          t('procedures.success.created'),
+          t('procedures.success.createdMessage')
+        );
       }
       onClose();
       setShowCustomType(false);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Erreur lors de la sauvegarde:', error);
+      const errorMessage = error?.response?.data?.message ||
+                          error?.message ||
+                          t('procedures.error.save');
+
+      await showErrorAlert(
+        mode === 'edit' ? t('procedures.error.update') : t('procedures.error.create'),
+        errorMessage
+      );
     } finally {
       setIsLoading(false);
     }
@@ -190,7 +207,7 @@ export default function CreateProcedureModal({
 
             {/* Titre */}
             <div className="sm:col-span-2">
-              <label className="block text-sm font-medium text-theme-secondary mb-2">
+              <label className="block text-sm font-medium text-theme-label mb-2">
                 {t('procedures.modal.titre')} *
               </label>
               <input
@@ -199,13 +216,13 @@ export default function CreateProcedureModal({
                 value={formData.titre}
                 onChange={(e) => setFormData({ ...formData, titre: e.target.value })}
                 className="w-full px-4 py-3 bg-theme-tertiary border-theme border rounded-xl text-theme-primary placeholder-opacity-50 focus:ring-2 focus:ring-offset-0 transition-all"
-                placeholder="Ex: Audience au tribunal"
+                placeholder={t('procedures.modal.titrePlaceholder')}
               />
             </div>
 
             {/* Type de procédure */}
             <div className="sm:col-span-2">
-              <label className="block text-sm font-medium text-theme-secondary mb-2">
+              <label className="block text-sm font-medium text-theme-label mb-2">
                 {t('procedures.modal.type')} *
               </label>
               {!showCustomType ? (
@@ -248,7 +265,7 @@ export default function CreateProcedureModal({
                     value={formData.type}
                     onChange={(e) => setFormData({ ...formData, type: e.target.value })}
                     className="flex-1 px-4 py-3 bg-theme-tertiary border-theme border rounded-xl text-theme-primary placeholder-opacity-50 focus:ring-2 focus:ring-offset-0 transition-all"
-                    placeholder="Saisir le type de procédure"
+                    placeholder={t('procedures.modal.typePlaceholder')}
                   />
                   <button
                     type="button"
@@ -266,7 +283,7 @@ export default function CreateProcedureModal({
 
             {/* Date événement */}
             <div>
-              <label className="block text-sm font-medium text-theme-secondary mb-2">
+              <label className="block text-sm font-medium text-theme-label mb-2">
                 {t('procedures.modal.dateEvenement')}
               </label>
               <input
@@ -279,7 +296,7 @@ export default function CreateProcedureModal({
 
             {/* Deadline */}
             <div>
-              <label className="block text-sm font-medium text-theme-secondary mb-2">
+              <label className="block text-sm font-medium text-theme-label mb-2">
                 {t('procedures.modal.deadline')}
               </label>
               <input
@@ -292,7 +309,7 @@ export default function CreateProcedureModal({
 
             {/* Statut */}
             <div>
-              <label className="block text-sm font-medium text-theme-secondary mb-2">
+              <label className="block text-sm font-medium text-theme-label mb-2">
                 {t('procedures.modal.statut')}
               </label>
               <select
@@ -310,7 +327,7 @@ export default function CreateProcedureModal({
 
             {/* Priorité */}
             <div>
-              <label className="block text-sm font-medium text-theme-secondary mb-2">
+              <label className="block text-sm font-medium text-theme-label mb-2">
                 {t('procedures.modal.priorite')}
               </label>
               <select
@@ -327,7 +344,7 @@ export default function CreateProcedureModal({
 
             {/* Tribunal */}
             <div>
-              <label className="block text-sm font-medium text-theme-secondary mb-2">
+              <label className="block text-sm font-medium text-theme-label mb-2">
                 {t('procedures.modal.tribunal')}
               </label>
               <input
@@ -341,7 +358,7 @@ export default function CreateProcedureModal({
 
             {/* Juge */}
             <div>
-              <label className="block text-sm font-medium text-theme-secondary mb-2">
+              <label className="block text-sm font-medium text-theme-label mb-2">
                 {t('procedures.modal.juge')}
               </label>
               <input
@@ -355,7 +372,7 @@ export default function CreateProcedureModal({
 
             {/* Description */}
             <div className="sm:col-span-2">
-              <label className="block text-sm font-medium text-theme-secondary mb-2">
+              <label className="block text-sm font-medium text-theme-label mb-2">
                 {t('procedures.modal.description')}
               </label>
               <textarea
@@ -375,14 +392,14 @@ export default function CreateProcedureModal({
             type="button"
             onClick={onClose}
             disabled={isLoading}
-            className="w-full sm:w-auto px-6 py-3 border-theme border rounded-xl text-theme-secondary font-semibold hover:bg-theme-tertiary transition-all disabled:opacity-50"
+            className="cursor-pointer w-full sm:w-auto px-6 py-3 border-theme border bg-theme-secondary rounded-xl text-theme-secondary font-semibold hover:bg-theme-tertiary transition-all disabled:opacity-50"
           >
             {t('common.cancel')}
           </button>
           <button
             onClick={handleSubmit}
             disabled={isLoading}
-            className="w-full sm:w-auto px-6 py-3 bg-accent-gradient hover:bg-accent-gradient-hover text-white rounded-xl font-semibold shadow-lg transition-all disabled:opacity-50 flex items-center justify-center space-x-2"
+            className="cursor-pointer w-full sm:w-auto px-6 py-3 bg-accent-gradient hover:bg-accent-gradient-hover text-white rounded-xl font-semibold shadow-lg transition-all disabled:opacity-50 flex items-center justify-center space-x-2"
           >
             {isLoading ? (
               <>

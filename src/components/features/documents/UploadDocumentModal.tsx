@@ -3,6 +3,7 @@ import { MdClose, MdCloudUpload, MdDescription } from 'react-icons/md';
 import { useTranslation } from 'react-i18next';
 import { useDossiers } from '../../../hooks/useDossiers';
 import { documentService, type CreateDocumentDto } from '../../../services/document.service';
+import { showSuccessAlert, showErrorAlert } from '../../../utils/alerts';
 
 interface UploadDocumentModalProps {
   isOpen: boolean;
@@ -69,6 +70,10 @@ export default function UploadDocumentModal({ isOpen, onClose, onSuccess, dossie
     try {
       setIsUploading(true);
       await documentService.upload(file, formData);
+      await showSuccessAlert(
+        'Document ajouté',
+        'Le document a été uploadé avec succès'
+      );
       onSuccess();
       onClose();
       setFile(null);
@@ -79,9 +84,16 @@ export default function UploadDocumentModal({ isOpen, onClose, onSuccess, dossie
         categorie: 'autre',
         niveau_confidentialite: 'confidentiel',
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error('Erreur upload:', error);
-      alert('Erreur lors de l\'upload');
+      const errorMessage = error?.response?.data?.message ||
+                          error?.message ||
+                          'Une erreur est survenue lors de l\'upload';
+
+      await showErrorAlert(
+        'Erreur d\'upload',
+        errorMessage
+      );
     } finally {
       setIsUploading(false);
     }
@@ -248,14 +260,14 @@ export default function UploadDocumentModal({ isOpen, onClose, onSuccess, dossie
             type="button"
             onClick={onClose}
             disabled={isUploading}
-            className="w-full sm:w-auto px-6 py-3 border-theme border rounded-xl text-theme-secondary font-semibold hover:bg-theme-tertiary transition-all"
+            className="cursor-pointer w-full sm:w-auto px-6 py-3 border-theme border rounded-xl text-theme-secondary bg-theme-secondary font-semibold hover:bg-theme-tertiary transition-all"
           >
             {t('upload.document.cancel')}
           </button>
           <button
             onClick={handleUpload}
             disabled={isUploading || !file || !formData.id_dossier}
-            className="w-full sm:w-auto px-6 py-3 bg-gradient-to-r from-blue-500 to-cyan-600 hover:from-blue-600 hover:to-cyan-700 text-white rounded-xl font-semibold shadow-lg transition-all disabled:opacity-50"
+            className="cursor-pointer w-full sm:w-auto px-6 py-3 bg-gradient-to-r from-blue-500 to-cyan-600 hover:from-blue-600 hover:to-cyan-700 text-white rounded-xl font-semibold shadow-lg transition-all disabled:opacity-50"
           >
             {isUploading ?  t('upload.document.uploading') : t('upload.document.uploadBtn')}
           </button>

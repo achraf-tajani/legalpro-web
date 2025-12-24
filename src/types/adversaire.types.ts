@@ -18,7 +18,7 @@ export interface Adversaire {
 export interface CreateAdversaireDto {
   id_dossier: string;
   nom: string;
-  type_adversaire?: string |  null;
+  type_adversaire?: string | null;
   email?: string | null;
   telephone?: string | null;
   avocat_adverse?: string | null;

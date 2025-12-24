@@ -10,6 +10,7 @@
   --color-textPrimary: 255, 255, 255;
   --color-textSecondary: 203, 213, 225;
   --color-textMuted: 148, 163, 184;
+  --color-textLabel: 226, 232, 240;
   --color-accentStart: 99, 102, 241;
   --color-accentEnd: 147, 51, 234;
   --color-accentSecondaryStart: 16, 185, 129;
@@ -66,7 +67,9 @@
   .text-theme-secondary {
     color: rgb(var(--color-textSecondary));
   }
-  
+  .text-theme-label {
+    color: rgb(var(--color-textLabel));
+  }
   .text-theme-muted {
     color: rgb(var(--color-textMuted));
   }

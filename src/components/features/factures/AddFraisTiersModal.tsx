@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { MdClose } from 'react-icons/md';
+import { showErrorAlert } from '../../../utils/alerts';
 
 interface AddFraisTiersModalProps {
   isOpen: boolean;
@@ -14,17 +15,23 @@ export default function AddFraisTiersModal({ isOpen, onClose, onAdd }: AddFraisT
   const [description, setDescription] = useState('');
   const [montant, setMontant] = useState('');
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!description.trim()) {
-      alert('Veuillez saisir une description');
+      await showErrorAlert(
+        'Champ requis',
+        'Veuillez saisir une description'
+      );
       return;
     }
 
     const montantNum = parseFloat(montant);
     if (isNaN(montantNum) || montantNum <= 0) {
-      alert('Veuillez saisir un montant valide');
+      await showErrorAlert(
+        'Montant invalide',
+        'Veuillez saisir un montant valide'
+      );
       return;
     }
 

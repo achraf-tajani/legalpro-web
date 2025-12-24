@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { MdClose } from 'react-icons/md';
 import { useTranslation } from 'react-i18next';
 import type { Client, CreateClientDto, UpdateClientDto } from '../../../types/client.types';
+import { showSuccessAlert, showErrorAlert } from '../../../utils/alerts';
 
 interface CreateClientModalProps {
   isOpen: boolean;
@@ -69,16 +70,61 @@ export default function CreateClientModal({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Validation côté client
+    if (!formData.nom || formData.nom.trim() === '') {
+      await showErrorAlert(
+        t('clients.error.createTitle') || 'Erreur de création',
+        t('clients.error.nomRequired') || 'Le nom est requis'
+      );
+      return;
+    }
+
     setIsLoading(true);
     try {
       if (mode === 'edit' && client && onUpdate) {
         await onUpdate(client.id, formData);
+        await showSuccessAlert(
+          t('clients.success.updated') || 'Client modifié',
+          t('clients.success.updatedMessage') || 'Le client a été modifié avec succès'
+        );
       } else {
         await onSubmit(formData);
+        await showSuccessAlert(
+          t('clients.success.created') || 'Client créé',
+          t('clients.success.createdMessage') || 'Le client a été créé avec succès'
+        );
       }
       onClose();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Erreur lors de la sauvegarde:', error);
+
+      // Extraire le message d'erreur
+      let errorMessage = t('clients.error.generic') || 'Une erreur est survenue';
+
+      if (error?.response?.data?.message) {
+        const apiMessage = error.response.data.message;
+        // Personnaliser les messages d'erreur de l'API
+        if (Array.isArray(apiMessage)) {
+          errorMessage = apiMessage.join(', ');
+        } else if (typeof apiMessage === 'string') {
+          // Traduire les erreurs communes
+          if (apiMessage.includes('nom')) {
+            errorMessage = t('clients.error.nomRequired') || 'Le nom est requis';
+          } else {
+            errorMessage = apiMessage;
+          }
+        }
+      } else if (error?.message) {
+        errorMessage = error.message;
+      }
+
+      await showErrorAlert(
+        mode === 'edit'
+          ? (t('clients.error.updateTitle') || 'Erreur de modification')
+          : (t('clients.error.createTitle') || 'Erreur de création'),
+        errorMessage
+      );
     } finally {
       setIsLoading(false);
     }
@@ -111,7 +157,7 @@ export default function CreateClientModal({
             
             {/* Type client */}
             <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-theme-secondary mb-2">
+              <label className="block text-sm font-medium text-theme-label mb-2">
                 {t('clients.modal.typeClient')} *
               </label>
               <div className="flex flex-col sm:flex-row gap-2 sm:gap-4">
@@ -123,7 +169,7 @@ export default function CreateClientModal({
                     onChange={(e) => setFormData({ ...formData, type_client: e.target.value as any })}
                     className="text-indigo-500 focus:ring-indigo-500"
                   />
-                <span className="text-theme-primary">{t('clients.type.personne_physique')}</span>
+                <span className="text-theme-secondary">{t('clients.type.personne_physique')}</span>
                 </label>
                 <label className="flex items-center space-x-2 cursor-pointer">
                   <input
@@ -150,9 +196,9 @@ export default function CreateClientModal({
 
             {/* Nom */}
             <div>
-              <label className="block text-sm font-medium text-theme-secondary mb-2">
-                {(formData.type_client === 'entreprise' || formData.type_client === 'organisation') 
-                  ? t('clients.modal.nomEntreprise') 
+              <label className="block text-sm font-medium text-theme-label mb-2">
+                {(formData.type_client === 'entreprise' || formData.type_client === 'organisation')
+                  ? t('clients.modal.nomEntreprise')
                   : t('clients.modal.nom')} *
               </label>
               <input
@@ -168,14 +214,14 @@ export default function CreateClientModal({
             {/* Prénom (seulement pour personne physique) */}
             {formData.type_client === 'personne_physique' && (
               <div>
-                <label className="block text-sm font-medium text-theme-secondary mb-2">
+                <label className="block text-sm font-medium text-theme-label mb-2">
                   {t('clients.modal.prenom')}
                 </label>
                 <input
                   type="text"
                   value={formData.prenom}
                   onChange={(e) => setFormData({ ...formData, prenom: e.target.value })}
-                  className="w-full px-4 py-3 bg-theme-tertiary/50 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+                  className="w-full px-4 py-3 bg-theme-tertiary/50 border border-slate-700 rounded-xl text-theme-primary placeholder-slate-500 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
                   placeholder={t('clients.modal.prenomPlaceholder')}
                 />
               </div>
@@ -184,14 +230,14 @@ export default function CreateClientModal({
             {/* Type entité (pour entreprise et organisation) */}
             {(formData.type_client === 'entreprise' || formData.type_client === 'organisation') && (
               <div>
-                <label className="block text-sm font-medium text-theme-secondary mb-2">
+                <label className="block text-sm font-medium text-theme-label mb-2">
                   {t('clients.modal.typeEntite')}
                 </label>
                 <input
                   type="text"
-                  value={formData.type_entite}
+                  value={formData.type_entite || ''}
                   onChange={(e) => setFormData({ ...formData, type_entite: e.target.value })}
-                  className="w-full px-4 py-3 bg-theme-tertiary/50 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+                  className="w-full px-4 py-3 bg-theme-tertiary/50 border border-slate-700 rounded-xl text-theme-primary placeholder-slate-500 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
                   placeholder={t('clients.modal.typeEntitePlaceholder')}
                 />
               </div>
@@ -199,84 +245,84 @@ export default function CreateClientModal({
 
             {/* Email */}
             <div>
-              <label className="block text-sm font-medium text-theme-secondary mb-2">
+              <label className="block text-sm font-medium text-theme-label mb-2">
                 {t('clients.modal.email')}
               </label>
               <input
                 type="email"
-                value={formData.email}
+                value={formData.email  || ''}
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                className="w-full px-4 py-3 bg-theme-tertiary/50 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+                className="w-full px-4 py-3 bg-theme-tertiary/50 border border-slate-700 rounded-xl text-theme-primary placeholder-slate-500 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
                 placeholder={t('clients.modal.emailPlaceholder')}
               />
             </div>
 
             {/* Téléphone */}
             <div>
-              <label className="block text-sm font-medium text-theme-secondary mb-2">
+              <label className="block text-sm font-medium text-theme-label mb-2">
                 {t('clients.modal.telephone')}
               </label>
               <input
                 type="tel"
-                value={formData.telephone}
+                value={formData.telephone || ''}
                 onChange={(e) => setFormData({ ...formData, telephone: e.target.value })}
-                className="w-full px-4 py-3 bg-theme-tertiary/50 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+                className="w-full px-4 py-3 bg-theme-tertiary/50 border border-slate-700 rounded-xl text-theme-primary placeholder-slate-500 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
                 placeholder={t('clients.modal.telephonePlaceholder')}
               />
             </div>
 
             {/* Adresse */}
             <div className="sm:col-span-2">
-              <label className="block text-sm font-medium text-theme-secondary mb-2">
+              <label className="block text-sm font-medium text-theme-label mb-2">
                 {t('clients.modal.adresse')}
               </label>
               <input
                 type="text"
-                value={formData.adresse}
+                value={formData.adresse || ''}
                 onChange={(e) => setFormData({ ...formData, adresse: e.target.value })}
-                className="w-full px-4 py-3 bg-theme-tertiary/50 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+                className="w-full px-4 py-3 bg-theme-tertiary/50 border border-slate-700 rounded-xl text-theme-primary placeholder-slate-500 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
                 placeholder={t('clients.modal.adressePlaceholder')}
               />
             </div>
 
             {/* Ville */}
             <div>
-              <label className="block text-sm font-medium text-theme-secondary mb-2">
+              <label className="block text-sm font-medium text-theme-label mb-2">
                 {t('clients.modal.ville')}
               </label>
               <input
                 type="text"
-                value={formData.ville}
+                value={formData.ville || ''}
                 onChange={(e) => setFormData({ ...formData, ville: e.target.value })}
-                className="w-full px-4 py-3 bg-theme-tertiary/50 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+                className="w-full px-4 py-3 bg-theme-tertiary/50 border border-slate-700 rounded-xl text-theme-primary placeholder-slate-500 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
                 placeholder={t('clients.modal.villePlaceholder')}
               />
             </div>
 
             {/* Code postal */}
             <div>
-              <label className="block text-sm font-medium text-theme-secondary mb-2">
+              <label className="block text-sm font-medium text-theme-label mb-2">
                 {t('clients.modal.codePostal')}
               </label>
               <input
                 type="text"
-                value={formData.code_postal}
+                value={formData.code_postal || ''}
                 onChange={(e) => setFormData({ ...formData, code_postal: e.target.value })}
-                className="w-full px-4 py-3 bg-theme-tertiary/50 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+                className="w-full px-4 py-3 bg-theme-tertiary/50 border border-slate-700 rounded-xl text-theme-primary placeholder-slate-500 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
                 placeholder={t('clients.modal.codePostalPlaceholder')}
               />
             </div>
 
             {/* Pays */}
             <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-theme-secondary mb-2">
+              <label className="block text-sm font-medium text-theme-label mb-2">
                 {t('clients.modal.pays')}
               </label>
               <input
                 type="text"
-                value={formData.pays}
+                value={formData.pays || ''}
                 onChange={(e) => setFormData({ ...formData, pays: e.target.value })}
-                className="w-full px-4 py-3 bg-theme-tertiary/50 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+                className="w-full px-4 py-3 bg-theme-tertiary/50 border border-slate-700 rounded-xl text-theme-primary placeholder-slate-500 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
                 placeholder={t('clients.modal.paysPlaceholder')}
               />
             </div>
@@ -289,14 +335,14 @@ export default function CreateClientModal({
             type="button"
             onClick={onClose}
             disabled={isLoading}
-            className="w-full sm:w-auto px-6 py-3 border-theme border rounded-xl text-theme-secondary font-semibold hover:bg-theme-tertiary transition-all disabled:opacity-50"
+            className="cursor-pointer w-full sm:w-auto px-6 py-3 border-theme bg-theme-secondary border rounded-xl text-theme-secondary font-semibold hover:bg-theme-tertiary transition-all disabled:opacity-50"
           >
             {t('common.cancel')}
           </button>
           <button
             onClick={handleSubmit}
             disabled={isLoading}
-            className="w-full sm:w-auto px-6 py-3 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white rounded-xl font-semibold shadow-lg transition-all disabled:opacity-50 flex items-center justify-center space-x-2"
+            className="cursor-pointer w-full sm:w-auto px-6 py-3 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white rounded-xl font-semibold shadow-lg transition-all disabled:opacity-50 flex items-center justify-center space-x-2"
           >
             {isLoading ? (
               <>

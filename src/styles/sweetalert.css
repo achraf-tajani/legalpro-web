@@ -1,0 +1,147 @@
+/* SweetAlert2 Custom Styles - Intégré au système de thème */
+
+/* Popup principale */
+.swal-popup-theme {
+  background: rgb(var(--color-bgSecondary)) !important;
+  border: 2px solid rgb(var(--color-borderHover)) !important;
+  border-radius: 1.5rem !important;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 0 1px rgb(var(--color-border)) !important;
+  padding: 2rem !important;
+}
+
+/* Titre */
+.swal-title-theme {
+  color: rgb(var(--color-textPrimary)) !important;
+  font-size: 1.5rem !important;
+  font-weight: 700 !important;
+  margin-bottom: 1rem !important;
+}
+
+/* Contenu */
+.swal-content-theme {
+  color: rgb(var(--color-textSecondary)) !important;
+  font-size: 1rem !important;
+  line-height: 1.5 !important;
+}
+
+/* Boutons */
+.swal-button-confirm,
+.swal-button-cancel {
+  padding: 0.75rem 1.5rem !important;
+  border-radius: 0.75rem !important;
+  font-weight: 600 !important;
+  font-size: 1rem !important;
+  transition: all 0.2s ease !important;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
+}
+
+.swal-button-confirm:hover,
+.swal-button-cancel:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05) !important;
+}
+
+.swal-button-confirm:active,
+.swal-button-cancel:active {
+  transform: translateY(0) !important;
+}
+
+/* Toast notifications */
+.swal-toast-theme {
+  background: rgb(var(--color-bgSecondary)) !important;
+  border: 2px solid rgb(var(--color-borderHover)) !important;
+  border-radius: 1rem !important;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3) !important;
+  color: rgb(var(--color-textPrimary)) !important;
+}
+
+/* Animation de la popup */
+@keyframes swal2-show {
+  0% {
+    transform: scale(0.7);
+    opacity: 0;
+  }
+  45% {
+    transform: scale(1.05);
+    opacity: 1;
+  }
+  80% {
+    transform: scale(0.95);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes swal2-hide {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(0.5);
+    opacity: 0;
+  }
+}
+
+/* Overlay (fond sombre derrière la popup) */
+.swal2-container {
+  backdrop-filter: blur(4px) !important;
+}
+
+.swal2-popup.swal2-toast .swal2-title {
+  color: rgb(var(--color-textPrimary)) !important;
+  font-size: 0.95rem !important;
+}
+
+/* Icons personnalisés */
+.swal2-icon {
+  border-width: 3px !important;
+}
+
+/* Style pour les icônes success, error, warning, info */
+.swal2-icon.swal2-success .swal2-success-ring {
+  border-color: rgba(16, 185, 129, 0.3) !important;
+}
+
+.swal2-icon.swal2-error [class^='swal2-x-mark-line'] {
+  background-color: #ef4444 !important;
+}
+
+.swal2-icon.swal2-warning {
+  border-color: #f59e0b !important;
+  color: #f59e0b !important;
+}
+
+/* Barre de progression pour les toasts */
+.swal2-timer-progress-bar {
+  background: rgb(var(--color-accentStart)) !important;
+}
+
+/* Actions container */
+.swal2-actions {
+  margin-top: 1.5rem !important;
+  gap: 0.75rem !important;
+}
+
+/* Input fields dans les alertes */
+.swal2-input,
+.swal2-textarea {
+  background: rgb(var(--color-bgTertiary)) !important;
+  border: 1px solid rgb(var(--color-border)) !important;
+  border-radius: 0.75rem !important;
+  color: rgb(var(--color-textPrimary)) !important;
+  padding: 0.75rem !important;
+}
+
+.swal2-input:focus,
+.swal2-textarea:focus {
+  border-color: rgb(var(--color-accentStart)) !important;
+  outline: none !important;
+  box-shadow: 0 0 0 3px rgba(var(--color-accentStart), 0.1) !important;
+}
+
+/* Loading spinner */
+.swal2-loader {
+  border-color: rgb(var(--color-accentStart)) transparent rgb(var(--color-accentStart)) transparent !important;
+}

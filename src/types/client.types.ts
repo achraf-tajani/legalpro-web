@@ -21,13 +21,13 @@ export interface CreateClientDto {
   nom: string;
   prenom?: string;
   type_client: 'personne_physique' | 'entreprise' | 'organisation';
-  email?: string;
-  telephone?: string;
-  adresse?: string;
-  code_postal?: string;
-  ville?: string;
-  pays?: string;
-  type_entite?: string;
+  email?: string  | null;
+  telephone?: string  | null;
+  adresse?: string  | null;
+  code_postal?: string  | null;
+  ville?: string  | null;
+  pays?: string  | null;
+  type_entite?: string  | null;
 }
 
 export interface UpdateClientDto extends Partial<CreateClientDto> {}
