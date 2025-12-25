@@ -3,6 +3,7 @@ import { MdClose } from 'react-icons/md';
 import { useTranslation } from 'react-i18next';
 import type { CreateDossierDto, UpdateDossierDto, Dossier } from '../../../types/dossier.types';
 import { showSuccessAlert, showErrorAlert } from '../../../utils/alerts';
+import { useAuthStore } from '../../../stores/authStore';
 
 interface CreateDossierModalProps {
   isOpen: boolean;
@@ -14,18 +15,19 @@ interface CreateDossierModalProps {
   mode?: 'create' | 'edit';
 }
 
-export default function CreateDossierModal({ 
-  isOpen, 
-  onClose, 
+export default function CreateDossierModal({
+  isOpen,
+  onClose,
   onSubmit,
   onUpdate,
   clients,
   dossier = null,
   mode = 'create'
 }: CreateDossierModalProps) {
-  
+
   const { t, i18n } = useTranslation();
   const isRTL = i18n.language === 'ar';
+  const { user } = useAuthStore();
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState<CreateDossierDto>({
     titre: '',
@@ -94,7 +96,12 @@ export default function CreateDossierModal({
           t('dossiers.success.updatedMessage') || 'Le dossier a été modifié avec succès'
         );
       } else {
-        await onSubmit(formData);
+        // Ajouter automatiquement l'avocat assigné (utilisateur connecté)
+        const dossierData = {
+          ...formData,
+          avocat_assigne: user?.avocatId || undefined
+        };
+        await onSubmit(dossierData);
         await showSuccessAlert(
           t('dossiers.success.created') || 'Dossier créé',
           t('dossiers.success.createdMessage') || 'Le dossier a été créé avec succès'
