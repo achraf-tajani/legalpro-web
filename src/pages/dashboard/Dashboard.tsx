@@ -9,11 +9,8 @@ import {
   MdFolder,
   MdPeople, 
   MdWarning, 
-  MdAttachMoney,
-  MdCheckCircle
+  MdAttachMoney
 } from 'react-icons/md';
-import type { Procedure } from '../../types/procedure.types';
-import type { Tache } from '../../types/tache.types';
 
 // Type pour unifier procédures et tâches
 type UpcomingItem = {
